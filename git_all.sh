@@ -1,3 +1,5 @@
+git config --global credential.helper 'cache --timeout 7200'
+
 if [ "$1" == "" ]; then
 	echo "Usage: ./git_all.sh \"message\""
 else
