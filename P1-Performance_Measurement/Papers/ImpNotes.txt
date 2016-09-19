@@ -1,3 +1,5 @@
+*** Is our cache WT or WB?
+
 Check Source Code.
 
 1. For kernel entry and exit - repeatedly call a syscall and measure the time for those calls. Take the average.
