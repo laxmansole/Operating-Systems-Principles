@@ -1,3 +1,5 @@
+Check Source Code.
+
 1. For kernel entry and exit - repeatedly call a syscall and measure the time for those calls. Take the average.
 
 Syscall list - http://man7.org/linux/man-pages/man2/syscalls.2.html
