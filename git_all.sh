@@ -4,7 +4,7 @@ if [ "$1" == "" ]; then
 	echo "Usage: ./git_all.sh \"message\""
 else
 	git pull
-	git add .
+	git add --all
 	git commit -m "$1" *
 	git push
 fi
