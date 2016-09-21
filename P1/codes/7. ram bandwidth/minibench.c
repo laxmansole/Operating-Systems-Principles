@@ -1,5 +1,5 @@
 #include<stdio.h>
-
+typedef long long uint64_t;
 int main()
 {
 	unsigned cycles_high, cycles_high1, cycles_low, cycles_low1;
@@ -25,5 +25,6 @@ int main()
 	end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
 	printf("%llu \n", (end-start));
 
-	return k;
+	return 0;
+
 }
