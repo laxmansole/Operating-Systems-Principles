@@ -1,0 +1,13 @@
+*** Is our cache WT or WB???
+
+Check Source Code.
+
+1. For kernel entry and exit - repeatedly call a syscall and measure the time for those calls. Take the average.
+
+Syscall list - http://man7.org/linux/man-pages/man2/syscalls.2.html
+
+2. Context switch - fork a child process and connect the two using two pipes. Pass 1 byte data back and forth from the pipes. 
+
+3. Block copy - see bcopy()
+
+4. File read, write, open close - generic C program.
