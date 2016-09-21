@@ -5,7 +5,7 @@ if [ "$1" == "" ]; then
 else
 	git pull
 	git add --all
-	git commit -m "$1" *
+	git commit -m "$1" 
 	git push
 fi
 
