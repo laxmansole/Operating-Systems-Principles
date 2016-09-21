@@ -1,0 +1,12 @@
+SRC=$(wildcard *.c)
+
+PROGS=$(patsubst %.c,%,$(SRC))
+
+all:$(PROGS)
+
+%: %.c
+	gcc -o $@ $<
+
+
+clean:
+	find . -name '*.c' -o -name 'Makefile' -prune -o -type f -exec rm {} \;
