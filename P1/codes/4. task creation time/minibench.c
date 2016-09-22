@@ -35,16 +35,6 @@ int main()
 		end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
 		printf("Task Creation overhead (fork) = %llu\n", (end-start));
 	}
-
-	if ( is_child == 0 ){
-		// close(pdes[1]); 
-		// read(pdes[0], buf, 100); 									/* read from parent */
-		printf("This is the child with pid = %d and is_child = %d\n", getpid(), is_child);
-	} else{
-		// close(pdes[0]); 
-		// write(pdes[1], "this is written\n", 16); 					/* write to child */
-		printf("This is the parent with pid = %d and is_child = %d\n", getpid(), is_child);
-	}
-
+	
 	return 0;
 }
