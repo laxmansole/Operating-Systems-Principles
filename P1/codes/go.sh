@@ -19,5 +19,18 @@ runcache(){
 	./cache
 }
 
+exp2(){
+
+cd 2.*
+make clean
+make
+for i in `seq 1 10`:
+	do 
+		./minibench
+	done
+cd -
+}
+
+exp2
 #hello_main
-runcache
+#runcache
