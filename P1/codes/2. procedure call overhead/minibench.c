@@ -1,22 +1,29 @@
 #include<stdio.h>
 typedef long long uint64_t;
+
 void foo(){
 }
+
 void foo1(int k){
 }
+
 void foo2(int i, int j){
 }
-void foo3( int i, int j, int k){
-}
-void foo4( int i, int j, int k, int l){
-}
-void foo5( int i, int j, int k, int l, int m ){
-}
-void foo6( int i, int j, int k, int l, int m, int n) {
-}
-void foo7( int i, int j, int k, int l, int m, int n, int o){
+
+void foo3(int i, int j, int k){
 }
 
+void foo4(int i, int j, int k, int l){
+}
+
+void foo5(int i, int j, int k, int l, int m ){
+}
+
+void foo6(int i, int j, int k, int l, int m, int n) {
+}
+
+void foo7(int i, int j, int k, int l, int m, int n, int o){
+}
 
 int main()
 {
