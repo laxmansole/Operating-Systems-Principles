@@ -9,7 +9,7 @@ int main()
 	uint64_t start, end;
 
 	int pdes[2] = {10, 20};
-	int is_child = 1;
+	int is_child;
 	char buf[100];
 	 
 	pipe(pdes);
@@ -21,12 +21,9 @@ int main()
 		: "=r" (cycles_high), "=r" (cycles_low)
 		:: "%rax", "%rbx", "%rcx", "%rdx");
 
+	is_child = fork();
 
 	if(is_child != 0){
-
-	}
-	
-	//if(is_child != 0){
 		asm volatile ("rdtscp\n\t"
 			"mov %%edx, %0\n\t"
 			"mov %%eax, %1\n\t"
@@ -37,9 +34,7 @@ int main()
 		start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 		end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
 		printf("Task Creation overhead (fork) = %llu\n", (end-start));
-	//}
-
-	is_child = fork();
+	}
 
 	if ( is_child == 0 ){
 		// close(pdes[1]); 
