@@ -22,15 +22,16 @@ runcache(){
 exp(){
 
 cd $1.*
+pwd
 make clean
 make
-for i in `seq 1 1000`:
+for i in `seq 1 $2`:
 	do 
-		./minibench
+		nice -20 ./minibench
 	done
 cd -
 }
 
-exp 3
+exp $1 $2
 #hello_main
 #runcache
