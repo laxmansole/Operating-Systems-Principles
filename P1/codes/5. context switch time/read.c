@@ -11,7 +11,7 @@ int main()
 	uint64_t start, end, start_read_child=0, start_write_child=0, start_read_parent=0, start_write_parent=0;
 
 	int pdes[2], pdes2[2];
-	int is_child;
+	int i,is_child;
 	char buf[100], buf2[100];
 	 
 	pipe(pdes);
@@ -19,7 +19,7 @@ int main()
 
 	is_child = fork();
 
-	for(int i=0; i<10; i++){
+	for(i=0; i<10; i++){
 		if ( is_child == 0 ){
 				close(pdes[1]);
 
@@ -41,7 +41,7 @@ int main()
 	
 				start_write_child = ( ((uint64_t)cycles_high << 32) | cycles_low );
 				end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-				printf("\n%d\tWe are in child. Cycles measured = %llu\n", i, (end-start_write_child));
+				printf("We are in child. Cycles measured = %llu\n",(end-start_write_child));
 	
 				close(pdes2[0]);
 				write(pdes2[1], &start_write_child, sizeof(uint64_t));

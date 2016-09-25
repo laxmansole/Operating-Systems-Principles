@@ -1,5 +1,7 @@
 #include<stdio.h>
+#include<unistd.h>
 typedef long long uint64_t;
+long page_size = 0;
 int main()
 {
 	unsigned cycles_high, cycles_high1, cycles_low, cycles_low1;
@@ -13,7 +15,7 @@ int main()
 		:: "%rax", "%rbx", "%rcx", "%rdx");
 
 	// Enter Code here
-
+	page_size = sysconf (_SC_PAGESIZE);
 	asm volatile ("rdtscp\n\t"
 		"mov %%edx, %0\n\t"
 		"mov %%eax, %1\n\t"
@@ -24,7 +26,7 @@ int main()
 	start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 	end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
 	printf("%llu \n", (end-start));
-
+	printf("pagesize = %ld\n",page_size);
 	return 0;
 
 }

@@ -11,7 +11,7 @@ int main()
 	uint64_t start, end, start_read_child, start_write_child, start_read_parent, start_write_parent;
 
 	int pdes[2], pdes2[2];
-	int is_child;
+	int is_child,i;
 	char buf[100], buf2[100];
 	 
 	pipe(pdes);
@@ -19,7 +19,7 @@ int main()
 
 	is_child = fork();
 
-	for(int i=0; i<10; i++){
+	for(i=0; i<1; i++){
 		if ( is_child == 0 ){
 				close(pdes[1]);
 				read(pdes[0], &start_read_child, sizeof(uint64_t));
@@ -32,7 +32,7 @@ int main()
 					:: "%rax", "%rbx", "%rcx", "%rdx");
 	
 				end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-				printf("\n%d\tWe are in child. Cycles measured = %llu\n", i, (end-start_read_child));
+				printf("We are in child. Cycles measured = %llu\n",(end-start_read_child));
 	
 				close(pdes2[0]);
 	
@@ -72,7 +72,7 @@ int main()
 					:: "%rax", "%rbx", "%rcx", "%rdx");
 	
 				end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-				printf("\n\tWe are in parent. Cycles measured = %llu\n", (end-start_read_parent));
+				printf("We are in parent. Cycles measured = %llu\n", (end-start_read_parent));
 			}
 	}
 	return 0;

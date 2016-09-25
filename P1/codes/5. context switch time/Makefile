@@ -1,8 +1,8 @@
 CC = gcc
-#OPT = -O3
+OPT = -std=c99
 #OPT = -g
 WARN = -Wall
-CFLAGS = $(OPT) $(WARN) $(INC) $(LIB)
+CFLAGS = $(OPT) $(WARN) 
 
 
 SRC=$(wildcard *.c)
