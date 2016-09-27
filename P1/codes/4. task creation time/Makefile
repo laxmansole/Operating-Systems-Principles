@@ -12,7 +12,7 @@ PROGS=$(patsubst %.c,%,$(SRC))
 all:$(PROGS)
 
 %: %.c
-	${CC} -o $@ $<
+	${CC} -o $@ $< -pthread
 
 
 clean:

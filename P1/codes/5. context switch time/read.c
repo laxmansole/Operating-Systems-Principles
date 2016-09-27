@@ -19,7 +19,7 @@ int main()
 
 	is_child = fork();
 
-	for(i=0; i<10; i++){
+	for(i=0; i<1; i++){
 		if ( is_child == 0 ){
 				close(pdes[1]);
 
@@ -39,13 +39,14 @@ int main()
 					: "=r" (cycles_high1), "=r" (cycles_low1)
 					:: "%rax", "%rbx", "%rcx", "%rdx");
 	
-				start_write_child = ( ((uint64_t)cycles_high << 32) | cycles_low );
-				end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-				printf("We are in child. Cycles measured = %llu\n",(end-start_write_child));
 	
 				close(pdes2[0]);
 				write(pdes2[1], &start_write_child, sizeof(uint64_t));
 	
+				start_write_child = ( ((uint64_t)cycles_high << 32) | cycles_low );
+				end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
+				//printf("We are in child. Cycles measured = %llu\n",(end-start_write_child));
+				printf("%llu\n",(end-start_write_child));
 			} else{
 				close(pdes[0]);
 				write(pdes[1], &start_write_parent, sizeof(uint64_t));

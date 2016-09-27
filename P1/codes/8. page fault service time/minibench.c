@@ -39,7 +39,7 @@ int main(int argc, char ** argv) {
 		:: "%rax", "%rbx", "%rcx", "%rdx");
 	start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 	end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-	printf("segfault service time - %llu \n",(end-start));
+	printf("Page fault service time - %llu \n",(end-start));
 	//if(i>10) break;
 
   }

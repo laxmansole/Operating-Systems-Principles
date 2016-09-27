@@ -19,7 +19,8 @@ int main()
 		:: "%rax", "%rbx", "%rcx", "%rdx");
 
 	// Enter Code here
-	pipe(pdes);
+	//pipe(pdes);
+	getpid();
 
 	asm volatile ("rdtscp\n\t"
 		"mov %%edx, %0\n\t"
@@ -30,18 +31,18 @@ int main()
 
 	start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 	end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-	printf("Syscall overhead (pipe) = %llu\n", (end-start));
+	printf("%llu, ", (end-start));
 
 	int is_child = fork();
 
 	if ( is_child == 0 ){
 		// close(pdes[1]); 
 		// read(pdes[0], buf, 100); 									/* read from parent */
-		printf("This is the child with pid = %d and is_child = %d\n", getpid(), is_child);
+		//printf("This is the child with pid = %d and is_child = %d\n", getpid(), is_child);
 	} else{
 		// close(pdes[0]); 
 		// write(pdes[1], "this is written\n", 16); 					/* write to child */
-		printf("This is the parent with pid = %d and is_child = %d\n", getpid(), is_child);
+		//printf("This is the parent with pid = %d and is_child = %d\n", getpid(), is_child);
 	}
 
 	return 0;

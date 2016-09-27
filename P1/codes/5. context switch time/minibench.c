@@ -32,7 +32,8 @@ int main()
 					:: "%rax", "%rbx", "%rcx", "%rdx");
 	
 				end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-				printf("We are in child. Cycles measured = %llu\n",(end-start_read_child));
+				//printf("We are in child. Cycles measured = %llu\n",(end-start_read_child));
+				printf("%llu\n",(end-start_read_child));
 	
 				close(pdes2[0]);
 	
@@ -72,7 +73,8 @@ int main()
 					:: "%rax", "%rbx", "%rcx", "%rdx");
 	
 				end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-				printf("We are in parent. Cycles measured = %llu\n", (end-start_read_parent));
+				//printf("We are in parent. Cycles measured = %llu\n", (end-start_read_parent));
+				printf("%llu\n", (end-start_read_parent));
 			}
 	}
 	return 0;
