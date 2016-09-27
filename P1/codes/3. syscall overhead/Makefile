@@ -16,4 +16,4 @@ all:$(PROGS)
 
 
 clean:
-	find . -name '*.c' -o -name 'Makefile' -prune -o -type f -exec rm {} \;
+	find . -name '*.c' -o -name 'Makefile' -o -name 'script.sh' -prune -o -type f -exec rm {} \;

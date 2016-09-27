@@ -50,7 +50,7 @@ int main()
 
 	start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 	end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-	printf("foo()  : %llu \n", (end-start));
+	printf("\n%llu, ", (end-start));
 
 /***********************************************************************/
 
@@ -72,7 +72,7 @@ int main()
 
 	start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 	end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-	printf("foo1() : %llu \n", (end-start));
+	printf("%llu, ", (end-start));
 
 /***********************************************************************/
 
@@ -94,7 +94,7 @@ int main()
 
 	start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 	end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-	printf("foo2() : %llu \n", (end-start));
+	printf("%llu, ", (end-start));
 
 
 /***********************************************************************/
@@ -116,7 +116,7 @@ int main()
 
 	start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 	end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-	printf("foo3() : %llu \n", (end-start));
+	printf("%llu, ", (end-start));
 
 /***********************************************************************/
 	asm volatile ("cpuid\n\t"
@@ -138,7 +138,7 @@ int main()
 
 	start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 	end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-	printf("foo4() : %llu \n", (end-start));
+	printf("%llu, ", (end-start));
 
 /***********************************************************************/
 	asm volatile ("cpuid\n\t"
@@ -159,7 +159,7 @@ int main()
 
 	start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 	end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-	printf("foo5() : %llu \n", (end-start));
+	printf("%llu, ", (end-start));
 
 /***********************************************************************/
 	asm volatile ("cpuid\n\t"
@@ -180,7 +180,7 @@ int main()
 
 	start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 	end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-	printf("foo6() : %llu \n", (end-start));
+	printf("%llu, ", (end-start));
 
 /***********************************************************************/
 	asm volatile ("cpuid\n\t"
@@ -201,7 +201,7 @@ int main()
 
 	start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 	end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-	printf("foo7() : %llu \n", (end-start));
+	printf("%llu ", (end-start));
 
 /***********************************************************************/
 	return 0;
