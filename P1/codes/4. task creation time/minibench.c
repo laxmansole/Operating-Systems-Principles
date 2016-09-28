@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 typedef long long uint64_t;
 
@@ -9,7 +10,7 @@ int main()
 	uint64_t start, end;
 
 	int pdes[2] = {10, 20};
-	int is_child;
+	int is_child, status;
 	char buf[100];
 	 
 	pipe(pdes);
@@ -24,6 +25,8 @@ int main()
 	is_child = fork();
 
 	if(is_child != 0){
+
+		wait(&status);
 		asm volatile ("rdtscp\n\t"
 			"mov %%edx, %0\n\t"
 			"mov %%eax, %1\n\t"
@@ -33,7 +36,9 @@ int main()
 	
 		start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 		end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
-		printf("Task Creation overhead (fork) = %llu\n", (end-start));
+		printf("%llu\n", (end-start));
+	} else{
+		exit(0);
 	}
 	
 	return 0;

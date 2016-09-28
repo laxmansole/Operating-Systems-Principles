@@ -8,8 +8,8 @@ int main(int argc, char ** argv) {
 
   unsigned cycles_high, cycles_high1, cycles_low, cycles_low1;
   uint64_t start, end;
-  int fd = open(argv[1], O_RDONLY);
- // int fd = open("../crap/pop.txt", O_RDONLY);
+  //int fd = open(argv[1], O_RDONLY);
+  int fd = open("../input/pop.txt", O_RDONLY);
   struct stat stats;
   fstat(fd, &stats);
   posix_fadvise(fd, 0, stats.st_size, POSIX_FADV_DONTNEED);
@@ -20,7 +20,7 @@ int main(int argc, char ** argv) {
   }
   int result = 0;
   int i;
-  for (i = 0; i < 10; i++) {
+  for (i = 0; i < 9; i++) {
     
 	asm volatile ("cpuid\n\t"
 		"rdtsc\n\t"
@@ -40,8 +40,6 @@ int main(int argc, char ** argv) {
 	start = ( ((uint64_t)cycles_high << 32) | cycles_low );
 	end = ( ((uint64_t)cycles_high1 << 32) | cycles_low1 );
 	printf("Page fault service time - %llu \n",(end-start));
-	//if(i>10) break;
-
   }
 	//printf("%d result= %d\n",stats.st_size,result);
   munmap(map, stats.st_size);

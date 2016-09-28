@@ -27,11 +27,11 @@ make clean
 make
 for i in `seq 1 $2`:
 	do 
-		nice -20 ./$3
+		nice -20 ./minibench
 	done
 cd -
 }
 
-exp $1 $2 $3
+exp $1 $2 
 #hello_main
 #runcache
