@@ -41,31 +41,117 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/poll.h>
+//#include <assert.h>
 
 unsigned transaction_id;
+
+typedef struct node{
+	struct keyvalue_set keyval;
+	struct node * next;
+}node;
+
+node * head = NULL;
+
+static node * search_already_set(struct keyvalue_set __user *ukv){
+	node * temp = head;
+	while(temp != NULL){
+		if(temp->keyval.key == ukv->key){
+			// free temp->data and re-malloc, reassign
+			return temp;
+		}
+		temp = temp->next;
+	}
+	// assert(temp == NULL);
+	return temp;
+}
+
+static node * search_already_get(struct keyvalue_get __user *ukv){
+	node * temp = head;
+	while(temp != NULL){
+		if(temp->keyval.key == ukv->key){
+			// free temp->data and re-malloc, reassign
+			return temp;
+		}
+		temp = temp->next;
+	}
+	// assert(temp == NULL);
+	return temp;
+}
+
 static void free_callback(void *data)
 {
 }
 
 static long keyvalue_get(struct keyvalue_get __user *ukv)
 {
-    struct keyvalue_get kv;
+    // struct keyvalue_get kv;
+    node * temp = search_already_get(ukv);
+    if(temp != NULL){
+    	// assert(temp->keyval.key == ukv->key);
+    	*(ukv->size) = temp->keyval.size;
+    	memcpy(ukv->data, temp->keyval.data, temp->keyval.size);
+    }
+    else
+    	return -1;
 
     return transaction_id++;
 }
 
 static long keyvalue_set(struct keyvalue_set __user *ukv)
 {
-    struct keyvalue_set kv;
+    // struct keyvalue_set kv;
+    node * temp = (node *) kmalloc (sizeof(node), GFP_ATOMIC);
+    if(temp == NULL)
+    	return -1;
+
+    temp->keyval.data = (void *) kmalloc(temp->keyval.size, GFP_ATOMIC);
+    if(temp->keyval.data == NULL)
+    	return -1;
+
+    temp->keyval.key = ukv->key;
+    temp->keyval.size = ukv->size;
+    memcpy(temp->keyval.data, ukv->data, ukv->size);
+
+    if(search_already_set(ukv) != NULL)
+    	return -1;
+    else{
+    	temp->next = head;
+    	head = temp;
+    }
 
     return transaction_id++;
 }
 
 static long keyvalue_delete(struct keyvalue_delete __user *ukv)
 {
-    struct keyvalue_delete kv;
+    // struct keyvalue_delete kv;
+    int deleted = 0;
+    node *prev, *temp;
+    prev = head;
+    temp = head;
 
-    return transaction_id++;
+    if(temp->keyval.key == ukv->key){
+    	head = head->next;
+    	kfree(temp);
+    	deleted = 1;
+    }
+    else{
+	    while(temp != NULL){
+	    	if(temp->keyval.key == ukv->key){
+	    		prev->next = temp->next;
+	    		kfree(temp);
+	    		deleted = 1;
+	    		break;
+	    	}
+	    	prev = temp;
+			temp = temp->next;
+	    }
+	}
+
+	if(deleted == 0)
+		return -1;
+	else
+	    return transaction_id++;
 }
 
 //Added by Hung-Wei
