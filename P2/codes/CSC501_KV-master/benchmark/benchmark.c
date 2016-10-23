@@ -5,11 +5,6 @@
 #include <keyvalue.h>
 #include <fcntl.h>
 
-// added the following libraries
-#include <sys/types.h>
-#include <unistd.h>
-#include <string.h>
-
 int main(int argc, char *argv[])
 {
     int i=0,number_of_threads = 1, number_of_keys=1024, number_of_transactions = 65536; 
@@ -39,9 +34,7 @@ int main(int argc, char *argv[])
         a = rand();
         sprintf(data,"%d",a);
         tid = kv_set(devfd,i,strlen(data),data);
-
-        // changed %d to %lld for 3rd argument
-        fprintf(stderr,"S\t%d\t%d\t%ld\t%s\n",tid,i,strlen(data),data);
+        fprintf(stderr,"S\t%d\t%d\t%d\t%s\n",tid,i,strlen(data),data);
     }
 /*    for(i = 0; i < number_of_transactions; i++)
     {
