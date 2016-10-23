@@ -5,10 +5,13 @@
 #include <keyvalue.h>
 #include <fcntl.h>
 
+// added the following libraries
+#include <string.h>
+
 int main(int argc, char *argv[])
 {
     int i=0,number_of_threads = 1, number_of_keys=1024; 
-    int tid;
+    unsigned long long tid;
     __u64 size;
     __u64 key;
     char data[4096],op;
@@ -28,7 +31,7 @@ int main(int argc, char *argv[])
     }
     // Replay the log
     // Validate
-    while(scanf("%c %llu %llu %d %s",&op, &tid, &key, &size, &data)!=EOF)
+    while(scanf("%c %llu %llu %llu %s",&op, &tid, &key, &size, &data)!=EOF)
     {
         if(op == 'S')
         {

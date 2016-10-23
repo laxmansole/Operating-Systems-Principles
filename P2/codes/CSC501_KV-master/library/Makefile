@@ -13,7 +13,7 @@ install: libckv.so.1.0
 
 
 clean:
-	rm -f *.so *.o
+	rm -f *.so* *.o
 
 
 .PHONY: all clean
