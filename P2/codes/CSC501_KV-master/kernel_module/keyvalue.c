@@ -29,9 +29,13 @@
 //
 ////////////////////////////////////////////////////////////////////////
 
+// Name : Aditya Gulavani, Laxman Sole
+// Unity ID: agulava, lsole
+
 #include "keyvalue.h"
 
 #include <asm/uaccess.h>
+#include <linux/semaphore.h>
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -51,6 +55,8 @@ typedef struct node{
 }node;
 
 node * head = NULL;
+
+DEFINE_SEMAPHORE(sai);
 
 static node * search_already_set(struct keyvalue_set __user *ukv){
 	node * temp = head;
@@ -84,8 +90,13 @@ static void free_callback(void *data)
 
 static long keyvalue_get(struct keyvalue_get __user *ukv)
 {
+    node * temp;
+    if(down_interruptible(&sai)){
+
+    }
+
     // struct keyvalue_get kv;
-    node * temp = search_already_get(ukv);
+    temp = search_already_get(ukv);
     if(temp != NULL){
     	// assert(temp->keyval.key == ukv->key);
     	*(ukv->size) = temp->keyval.size;
@@ -94,13 +105,19 @@ static long keyvalue_get(struct keyvalue_get __user *ukv)
     else
     	return -1;
 
+    up(&sai);
     return transaction_id++;
 }
 
 static long keyvalue_set(struct keyvalue_set __user *ukv)
 {
     // struct keyvalue_set kv;
-    node * temp = (node *) kmalloc (sizeof(node), GFP_ATOMIC);
+    node * temp;
+    if(down_interruptible(&sai)){
+
+    }
+
+    temp = (node *) kmalloc (sizeof(node), GFP_ATOMIC);
     if(temp == NULL){
     	printk(KERN_ALERT "\nCannot allocate to temp in set function");
     	return -1;
@@ -123,14 +140,20 @@ static long keyvalue_set(struct keyvalue_set __user *ukv)
     	head = temp;
     }
 
+    up(&sai);
     return transaction_id++;
 }
 
 static long keyvalue_delete(struct keyvalue_delete __user *ukv)
 {
     // struct keyvalue_delete kv;
-    int deleted = 0;
+    int deleted;
     node *prev, *temp;
+    if(down_interruptible(&sai)){
+
+    }
+
+    deleted = 0;
     prev = head;
     temp = head;
 
@@ -143,6 +166,7 @@ static long keyvalue_delete(struct keyvalue_delete __user *ukv)
 	    while(temp != NULL){
 	    	if(temp->keyval.key == ukv->key){
 	    		prev->next = temp->next;
+	    		temp->next = NULL;
 	    		kfree(temp);
 	    		deleted = 1;
 	    		break;
@@ -152,6 +176,7 @@ static long keyvalue_delete(struct keyvalue_delete __user *ukv)
 	    }
 	}
 
+    up(&sai);
 	if(deleted == 0)
 		return -1;
 	else
