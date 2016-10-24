@@ -32,8 +32,11 @@ int main(int argc, char *argv[])
     {
         if(op == 'S')
         {
+            // fprintf(stderr, "before strcpy\n");
             strcpy(kv[(int)key],data);
+            // fprintf(stderr, "after strcpy\n");
             memset(data,0,4096);
+            // fprintf(stderr, "after memset\n");
         }
     }
     devfd = open("/dev/keyvalue",O_RDWR);
@@ -51,6 +54,10 @@ int main(int argc, char *argv[])
             fprintf(stderr, "Key %i has a wrong value %s v.s. %s\n",i,data,kv[i]);
             error++;
         }
+        // else{
+        //     fprintf(stderr, "\n\ndhattad tattad\n\n");
+        //     fprintf(stderr, "Key %i has a correct value %s v.s. %s\n",i,data,kv[i]);
+        // }
     }
     if(error==0)
             fprintf(stderr, "You passed!\n");

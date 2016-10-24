@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
     // Initializing the keys
     for(i = 0; i < number_of_keys; i++)
     {
+        // fprintf(stderr, "setting key - %d\n", i);
         memset(data, 0, 1024);
         a = rand();
         sprintf(data,"%d",a);

@@ -101,12 +101,16 @@ static long keyvalue_set(struct keyvalue_set __user *ukv)
 {
     // struct keyvalue_set kv;
     node * temp = (node *) kmalloc (sizeof(node), GFP_ATOMIC);
-    if(temp == NULL)
+    if(temp == NULL){
+    	printk(KERN_ALERT "\nCannot allocate to temp in set function");
     	return -1;
+    }
 
-    temp->keyval.data = (void *) kmalloc(temp->keyval.size, GFP_ATOMIC);
-    if(temp->keyval.data == NULL)
+    temp->keyval.data = (void *) kmalloc(ukv->size, GFP_ATOMIC);
+    if(temp->keyval.data == NULL){
+    	printk(KERN_ALERT "\nCannot allocate to temp->data in set function");
     	return -1;
+    }
 
     temp->keyval.key = ukv->key;
     temp->keyval.size = ukv->size;
