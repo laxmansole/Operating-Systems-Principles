@@ -43,13 +43,16 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	memset(data,0,4096);
-	tid = kv_get(devfd,0,&size,&data);
+	for (int i = 0; i < number_of_keys; ++i) {
+		/* code */
+		memset(data,0,4096);
+		tid = kv_get(devfd,i,&size,&data);
 
-	if(tid == -1)
-		fprintf(stderr,"cannot get, \t\t%d\t%d\n", tid, 0);
-	else
-		fprintf(stderr,"got, \t\t%d\t%d\n", tid, 0);
+		if(tid == -1)
+			fprintf(stderr,"cannot get, \t\t%d\t%d\n", tid, i);
+		else
+			fprintf(stderr,"got, \t\t%d\t%d\n", tid, i);
+	}
 
 	/*for(i = 0; i < number_of_keys; i++) {
 		memset(data,0,4096);

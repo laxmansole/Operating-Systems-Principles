@@ -58,17 +58,30 @@ node * head = NULL;
 
 DEFINE_SEMAPHORE(sai);
 
-static node * search_already_set(struct keyvalue_set __user *ukv){
+// this function returns:
+// -1 if mem allocation failed
+// 0 if node not found
+// 1 if node found and successfully overwritten
+static int search_already_set(struct keyvalue_set __user *ukv){
 	node * temp = head;
 	while(temp != NULL){
 		if(temp->keyval.key == ukv->key){
 			// free temp->data and re-malloc, reassign
-			return temp;
+			kfree(temp->keyval.data);
+		    temp->keyval.data = (void *) kmalloc(ukv->size, GFP_ATOMIC);
+		    if(temp->keyval.data == NULL){
+		    	printk(KERN_ALERT "\nCannot allocate to temp->data in set function");
+		    	return -1;
+		    }
+			    
+			temp->keyval.size = ukv->size;
+    		memcpy(temp->keyval.data, ukv->data, ukv->size);
+			return 1;
 		}
 		temp = temp->next;
 	}
 	// assert(temp == NULL);
-	return temp;
+	return 0;
 }
 
 static node * search_already_get(struct keyvalue_get __user *ukv){
@@ -102,8 +115,10 @@ static long keyvalue_get(struct keyvalue_get __user *ukv)
     	*(ukv->size) = temp->keyval.size;
     	memcpy(ukv->data, temp->keyval.data, temp->keyval.size);
     }
-    else
+    else{
+    	up(&sai);
     	return -1;
+    }
 
     up(&sai);
     return transaction_id++;
@@ -113,32 +128,42 @@ static long keyvalue_set(struct keyvalue_set __user *ukv)
 {
     // struct keyvalue_set kv;
     node * temp;
+    int ret_val;
     if(down_interruptible(&sai)){
 
     }
 
-    temp = (node *) kmalloc (sizeof(node), GFP_ATOMIC);
-    if(temp == NULL){
-    	printk(KERN_ALERT "\nCannot allocate to temp in set function");
+    ret_val = search_already_set(ukv);
+    if(ret_val == 1){
+    	up(&sai);
+    	return transaction_id++;
+    }
+    else if(-1 == ret_val){
+    	up(&sai);
     	return -1;
     }
+    else if(0 == ret_val){
+	    temp = (node *) kmalloc (sizeof(node), GFP_ATOMIC);
+	    if(temp == NULL){
+	    	printk(KERN_ALERT "\nCannot allocate to temp in set function");
+	    	up(&sai);
+	    	return -1;
+	    }
 
-    temp->keyval.data = (void *) kmalloc(ukv->size, GFP_ATOMIC);
-    if(temp->keyval.data == NULL){
-    	printk(KERN_ALERT "\nCannot allocate to temp->data in set function");
-    	return -1;
-    }
+	    temp->keyval.data = (void *) kmalloc(ukv->size, GFP_ATOMIC);
+	    if(temp->keyval.data == NULL){
+	    	printk(KERN_ALERT "\nCannot allocate to temp->data in set function");
+	    	up(&sai);
+	    	return -1;
+	    }
 
-    temp->keyval.key = ukv->key;
-    temp->keyval.size = ukv->size;
-    memcpy(temp->keyval.data, ukv->data, ukv->size);
+	    temp->keyval.key = ukv->key;
+	    temp->keyval.size = ukv->size;
+	    memcpy(temp->keyval.data, ukv->data, ukv->size);
 
-    if(search_already_set(ukv) != NULL)
-    	return -1;
-    else{
     	temp->next = head;
     	head = temp;
-    }
+	}
 
     up(&sai);
     return transaction_id++;

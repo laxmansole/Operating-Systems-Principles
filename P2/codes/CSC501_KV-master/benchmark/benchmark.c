@@ -8,10 +8,12 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <pthread.h>
+
 int main(int argc, char *argv[])
 {
-	int i=0, number_of_keys, number_of_transactions, a, tid, devfd, updated_key=0, key;
-	// __u64 size, int number_of_threads = 1;
+	int i=0, number_of_keys, number_of_transactions, a, tid, devfd, updated_key=0, key, delete_this, number_of_threads;
+	__u64 size;
 	char data[1024]; 
 
 	if(argc < 5) {
@@ -22,6 +24,8 @@ int main(int argc, char *argv[])
 	number_of_keys = atoi(argv[1]);
 	number_of_transactions = atoi(argv[2]);
 	updated_key = atoi(argv[3]);
+	delete_this = atoi(argv[4]);
+	number_of_threads = atoi(argv[4]);
 
 	devfd = open("/dev/keyvalue",O_RDWR);
 
@@ -44,12 +48,19 @@ int main(int argc, char *argv[])
 		fprintf(stderr,"S\t\t\t%d\t%d\t%lu\t%s\n", tid, i, strlen(data), data);
 	}
 
-	int delete_this = atoi(argv[4]);
-	tid = kv_delete(devfd, delete_this);
-	if(tid == -1)
-		fprintf(stderr,"Cannot delete, \t\t%d\t%d\n", tid, i);
-	else
-		fprintf(stderr,"Deleted, \t\t%d\t%d\n", tid, i);
+	fprintf(stderr,"\n\nDeleting\n");
+
+	for (int i = 0; i < delete_this; ++i) {
+		/* code */
+		int deleting_node = rand()%number_of_keys;
+		tid = kv_delete(devfd, deleting_node);
+		if(tid == -1)
+			fprintf(stderr,"Cannot delete, \t\t%d\t%d\n", tid, deleting_node);
+		else
+			fprintf(stderr,"Deleted, \t\t%d\t%d\n", tid, deleting_node);
+	}
+
+	fprintf(stderr,"\n\nGetting\n");
 /*	for (int i = 10; i >=0; --i) {
 		key = rand() % 20;
 		tid = kv_delete(devfd, i);
@@ -59,11 +70,11 @@ int main(int argc, char *argv[])
 			fprintf(stderr,"Deleted, \t\t%d\t%d\n", tid, i);
 	}*/
 
-	/* for(i = 0; i < number_of_transactions; i++)
+	/*for(i = 0; i < number_of_keys; i++)
 	{
-		tid = kv_get(devfd,i,size,&a);
-		fprintf(stderr,"G\t%d\t%d\t%d\n",tid,sizeof(int),a);
-		
+		memset(data,0,4096);
+		tid = kv_get(devfd, i, &size, &data);
+		fprintf(stderr,"G\t%d\t%lu\t%d\n", tid, sizeof(int), a);		
 	}*/
 
 	close(devfd);
