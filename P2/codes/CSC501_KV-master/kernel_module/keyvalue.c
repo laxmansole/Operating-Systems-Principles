@@ -119,9 +119,9 @@ static long keyvalue_get(struct keyvalue_get __user *ukv)
     	up(&sai);
     	return -1;
     }
-
+	transaction_id++;
     up(&sai);
-    return transaction_id++;
+    return transaction_id;
 }
 
 static long keyvalue_set(struct keyvalue_set __user *ukv)
@@ -135,8 +135,9 @@ static long keyvalue_set(struct keyvalue_set __user *ukv)
 
     ret_val = search_already_set(ukv);
     if(ret_val == 1){
+		transaction_id++;
     	up(&sai);
-    	return transaction_id++;
+    	return transaction_id;
     }
     else if(-1 == ret_val){
     	up(&sai);
@@ -164,9 +165,9 @@ static long keyvalue_set(struct keyvalue_set __user *ukv)
     	temp->next = head;
     	head = temp;
 	}
-
+	transaction_id++;
     up(&sai);
-    return transaction_id++;
+    return transaction_id;
 }
 
 static long keyvalue_delete(struct keyvalue_delete __user *ukv)
@@ -200,12 +201,12 @@ static long keyvalue_delete(struct keyvalue_delete __user *ukv)
 			temp = temp->next;
 	    }
 	}
-
+	transaction_id++;
     up(&sai);
 	if(deleted == 0)
 		return -1;
 	else
-	    return transaction_id++;
+	    return transaction_id;
 }
 
 //Added by Hung-Wei
