@@ -201,12 +201,16 @@ static long keyvalue_delete(struct keyvalue_delete __user *ukv)
 			temp = temp->next;
 	    }
 	}
-	transaction_id++;
-    up(&sai);
-	if(deleted == 0)
-		return -1;
-	else
-	    return transaction_id;
+
+    if(deleted == 0){
+        up(&sai);
+        return -1;
+    }
+    else{
+        transaction_id++;
+        up(&sai);
+        return transaction_id;
+    }
 }
 
 //Added by Hung-Wei
