@@ -184,6 +184,11 @@ static long keyvalue_delete(struct keyvalue_delete __user *ukv)
 
     }
 
+    if(head == NULL){
+        up(&sai);        
+        return -1;
+    }
+
     deleted = 0;
     prev = head;
     temp = head;

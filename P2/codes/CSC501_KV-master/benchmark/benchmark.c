@@ -4,105 +4,80 @@
 #include <time.h>
 #include <keyvalue.h>
 #include <fcntl.h>
-#include <pthread.h>
-#include <time.h>
+
 #include <string.h>
+#include <unistd.h>
 
-int devfd;
-pthread_mutex_t mymutex;
-
-void *doset()
-{
-    long i,tid;
-    int a;
-    long key;
-    long number_of_transactions = 65536;
-    char data[1024];
-    __u64 size;
-
-    for(i = 0; i < number_of_transactions; i++)
-    {
-        memset(data, 0, 1024);
-        a = rand();
-	key = i;// rand()%100;
-        sprintf(data,"%d",a);
-//        pthread_mutex_lock(&mymutex);
-        tid = kv_set(devfd,key,strlen(data)+1,data);
-        fprintf(stderr, "S\t%d\t%d\t%d\t%s\n",tid,key,strlen(data)+1,data);
-//        pthread_mutex_unlock(&mymutex);
-    }
-    return 0;
-}
-
-void *doget()
-{
-    int i,tid;
-    long number_of_transactions = 65536;
-    char data[1024];
-    __u64 size;
-
-    for(i = 0; i < number_of_transactions; i++)
-    {
-        memset(data, 0, 1024);
-        tid = kv_get(devfd,i,&size,data);
-        fprintf(stderr, "G\t%d\t%d\t%llu\t%s\n",tid,i,size, data );
-    //    fprintf(stderr, "G\t%d\t%d\t%llu\t%s\n",tid,i,size,(tid>-1)? data : "NULL");
-    }
-    return 0;
-}
-
-
-
-void *dodel()
-{
-    int i,tid;
-    long number_of_transactions = 65536;
-    char data[1024];
-    __u64 size;
-
-    for(i = 0; i < number_of_transactions; i = i+2)
-    {
-        memset(data, 0, 1024);
-        tid = kv_delete(devfd,i);
-        fprintf(stderr, "D\t%d\t%d\t%llu\t%s\n",tid,i,size, data );
-        //printf("D\t%d\t%d\t%llu\t%s\n",tid,i,size,(tid>-1)? data : "NULL");
-    }
-    return 0;
-}
-
-
-
+#include <pthread.h>
 
 int main(int argc, char *argv[])
 {
-    int i=0,number_of_threads = 1 ; 
+	int i=0, number_of_keys, number_of_transactions, a, tid, devfd, updated_key=0, key, delete_this, number_of_threads;
+	__u64 size;
+	char data[1024]; 
 
-    pthread_t pthread[6];
+	if(argc < 5) {
+		fprintf(stderr, "Usage: %s number_of_keys number_of_transactions\n",argv[0]);
+		exit(1);
+	}
 
-    devfd = open("/dev/keyvalue",O_RDWR);
-    pthread_mutex_init(&mymutex, NULL);
-    if(devfd < 0)
-    {
-        printf("Device open failed");
-        exit(1);
-    }
+	number_of_keys = atoi(argv[1]);
+	number_of_transactions = atoi(argv[2]);
+	updated_key = atoi(argv[3]);
+	delete_this = atoi(argv[4]);
+	number_of_threads = atoi(argv[4]);
 
-    pthread_create(&pthread[1],NULL,doset,NULL);
-    pthread_create(&pthread[2],NULL,dodel,NULL);
-    pthread_create(&pthread[0],NULL,doget,NULL);
-    pthread_create(&pthread[3],NULL,doget,NULL);
-    pthread_create(&pthread[4],NULL,doset,NULL);
-    pthread_create(&pthread[5],NULL,dodel,NULL);
-    pthread_create(&pthread[6],NULL,doget,NULL);
-    pthread_join(pthread[1],NULL);
-    pthread_join(pthread[1],NULL);
-    pthread_join(pthread[2],NULL);
-    pthread_join(pthread[3],NULL);
-    pthread_join(pthread[4],NULL);
-    pthread_join(pthread[5],NULL);
-    pthread_join(pthread[6],NULL);
-   
-    close(devfd);
-    return 0;
+	devfd = open("/dev/keyvalue",O_RDWR);
+
+	if(devfd < 0) {
+		fprintf(stderr, "Device open failed");
+		exit(1);
+	}
+
+	srand((int)time(NULL)+(int)getpid());
+
+	// Initializing the keys
+	// for(i = updated_key; i < updated_key+number_of_keys; i++) {
+	// 	// fprintf(stderr, "setting key - %d\n", i);
+	// 	memset(data, 0, 1024);
+	// 	a = rand();
+	// 	sprintf(data, "%d", a);
+	// 	key = rand() % 20;
+
+	// 	tid = kv_set(devfd, i, strlen(data), data);
+	// 	fprintf(stderr,"S\t\t\t%d\t%d\t%lu\t%s\n", tid, i, strlen(data), data);
+	// }
+
+	fprintf(stderr,"\n\nDeleting\n");
+
+	for (int i = 0; i < delete_this; ++i) {
+		/* code */
+		int deleting_node = rand()%number_of_keys;
+		tid = kv_delete(devfd, deleting_node);
+		if(tid == -1)
+			fprintf(stderr,"Cannot delete, \t\t%d\t%d\n", tid, deleting_node);
+		else
+			fprintf(stderr,"Deleted, \t\t%d\t%d\n", tid, deleting_node);
+	}
+
+	fprintf(stderr,"\n\nGetting\n");
+/*	for (int i = 10; i >=0; --i) {
+		key = rand() % 20;
+		tid = kv_delete(devfd, i);
+		if(tid == -1)
+			fprintf(stderr,"Cannot delete, \t\t%d\t%d\n", tid, i);
+		else
+			fprintf(stderr,"Deleted, \t\t%d\t%d\n", tid, i);
+	}*/
+
+	/*for(i = 0; i < number_of_keys; i++)
+	{
+		memset(data,0,4096);
+		tid = kv_get(devfd, i, &size, &data);
+		fprintf(stderr,"G\t%d\t%lu\t%d\n", tid, sizeof(int), a);		
+	}*/
+
+	close(devfd);
+	return 0;
 }
 
