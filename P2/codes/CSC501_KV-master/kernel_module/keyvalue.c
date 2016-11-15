@@ -61,7 +61,7 @@ typedef struct node{
 
 node * head = NULL;
 
-DEFINE_SEMAPHORE(sai);
+struct semaphore sai;
 
 static node * search_already_get(struct keyvalue_get __user *ukv){
 	node * temp = head;
@@ -71,7 +71,6 @@ static node * search_already_get(struct keyvalue_get __user *ukv){
 		}
 		temp = temp->next;
 	}
-	// assert(temp == NULL);
 	return temp;
 }
 
@@ -82,14 +81,12 @@ static void free_callback(void *data)
 static long keyvalue_get(struct keyvalue_get __user *ukv)
 {
 	node * temp;
-	if(down_interruptible(&sai)){
+	unsigned final;
+	int ignore = down_interruptible(&sai);
 
-	}
-
-	// struct keyvalue_get kv;
+	final = 0;
 	temp = search_already_get(ukv);
 	if(temp != NULL){
-		// assert(temp->keyval.key == ukv->key);
 		*(ukv->size) = temp->keyval.size;
 		memcpy(ukv->data, temp->keyval.data, temp->keyval.size);
 	}
@@ -97,9 +94,9 @@ static long keyvalue_get(struct keyvalue_get __user *ukv)
 		up(&sai);
 		return -1;
 	}
-	transaction_id++;
+	final = transaction_id++;
 	up(&sai);
-	return transaction_id;
+	return final;
 }
 
 // this function returns:
@@ -112,6 +109,7 @@ static int search_already_set(struct keyvalue_set __user *ukv){
 		if(temp->keyval.key == ukv->key){
 			// free temp->data and re-malloc, reassign
 			kfree(temp->keyval.data);
+			temp->keyval.data = NULL;
 			temp->keyval.data = (void *) kmalloc(ukv->size, GFP_ATOMIC);
 			if(temp->keyval.data == NULL){
 				printk(KERN_ALERT "\nCannot allocate to temp->data in set function");
@@ -124,24 +122,23 @@ static int search_already_set(struct keyvalue_set __user *ukv){
 		}
 		temp = temp->next;
 	}
-	// assert(temp == NULL);
 	return 0;
 }
 
 static long keyvalue_set(struct keyvalue_set __user *ukv)
 {
 	// struct keyvalue_set kv;
+	unsigned final;
 	node * temp;
 	int ret_val;
-	if(down_interruptible(&sai)){
+	int ignore = down_interruptible(&sai);
 
-	}
-
+	final = 0;
 	ret_val = search_already_set(ukv);
 	if(ret_val == 1){
-		transaction_id++;
+		final = transaction_id++;
 		up(&sai);
-		return transaction_id;
+		return final;
 	}
 	else if(-1 == ret_val){
 		up(&sai);
@@ -169,20 +166,20 @@ static long keyvalue_set(struct keyvalue_set __user *ukv)
 		temp->next = head;
 		head = temp;
 	}
-	transaction_id++;
+	final = transaction_id++;
 	up(&sai);
-	return transaction_id;
+	return final;
 }
 
 static long keyvalue_delete(struct keyvalue_delete __user *ukv)
 {
 	// struct keyvalue_delete kv;
 	int deleted;
+	unsigned final;
 	node *prev, *temp;
-	if(down_interruptible(&sai)){
+	int ignore = down_interruptible(&sai);
 
-	}
-
+	final = 0;
 	if(head == NULL){
 		up(&sai);
 		return -1;
@@ -195,6 +192,7 @@ static long keyvalue_delete(struct keyvalue_delete __user *ukv)
 	if(temp->keyval.key == ukv->key){
 		head = head->next;
 		kfree(temp);
+		temp = NULL;
 		deleted = 1;
 	}
 	else{
@@ -203,6 +201,7 @@ static long keyvalue_delete(struct keyvalue_delete __user *ukv)
 				prev->next = temp->next;
 				temp->next = NULL;
 				kfree(temp);
+				temp = NULL;
 				deleted = 1;
 				break;
 			}
@@ -216,9 +215,9 @@ static long keyvalue_delete(struct keyvalue_delete __user *ukv)
 		return -1;
 	}
 	else{
-		transaction_id++;
+		final = transaction_id++;
 		up(&sai);
-		return transaction_id;
+		return final;
 	}
 }
 
@@ -231,8 +230,7 @@ unsigned int keyvalue_poll(struct file *filp, struct poll_table_struct *wait)
 	return mask;
 }
 
-static long keyvalue_ioctl(struct file *filp, unsigned int cmd,
-		unsigned long arg)
+static long keyvalue_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	switch (cmd) {
 		case KEYVALUE_IOCTL_GET:
@@ -267,6 +265,8 @@ static struct miscdevice keyvalue_dev = {
 static int __init keyvalue_init(void)
 {
 	int ret;
+
+	sema_init(&sai, 1);
 
 	if ((ret = misc_register(&keyvalue_dev)))
 		printk(KERN_ERR "Unable to register \"keyvalue\" misc device\n");

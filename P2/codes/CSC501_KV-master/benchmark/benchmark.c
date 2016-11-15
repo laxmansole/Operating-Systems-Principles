@@ -33,20 +33,23 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Device open failed");
 		exit(1);
 	}
+	else{
+		fprintf(stderr, "Device opened Hurray\n\n");
+	}
 
 	srand((int)time(NULL)+(int)getpid());
 
 	// Initializing the keys
-	// for(i = updated_key; i < updated_key+number_of_keys; i++) {
+	for(i = updated_key; i < updated_key+number_of_keys; i++) {
 	// 	// fprintf(stderr, "setting key - %d\n", i);
-	// 	memset(data, 0, 1024);
-	// 	a = rand();
-	// 	sprintf(data, "%d", a);
-	// 	key = rand() % 20;
+		memset(data, 0, 1024);
+		a = rand();
+		sprintf(data, "%d", a);
+		key = rand() % 20;
 
-	// 	tid = kv_set(devfd, i, strlen(data), data);
-	// 	fprintf(stderr,"S\t\t\t%d\t%d\t%lu\t%s\n", tid, i, strlen(data), data);
-	// }
+		tid = kv_set(devfd, i, strlen(data), data);
+		fprintf(stderr,"S\t\t\t%d\t%d\t%lu\t%s\n", tid, i, strlen(data), data);
+	}
 
 	fprintf(stderr,"\n\nDeleting\n");
 
