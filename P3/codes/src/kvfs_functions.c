@@ -369,4 +369,3 @@ int kvfs_ftruncate_impl(const char *path, off_t offset, struct fuse_file_info *f
 int kvfs_fgetattr_impl(const char *path, struct stat *statbuf, struct fuse_file_info *fi) {
 	return -1;
 }
-
