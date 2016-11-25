@@ -127,7 +127,9 @@ int kvfs_utime_impl(const char *path, struct utimbuf *ubuf) {
  * Changed in version 2.2
  */
 int kvfs_open_impl(const char *path, struct fuse_file_info *fi) {
-	return -1;
+	
+	log_msg("kvfs_open_impl called\n");
+	return 0;
 }
 
 /** Read data from an open file
@@ -147,7 +149,9 @@ int kvfs_open_impl(const char *path, struct fuse_file_info *fi) {
 // with the fusexmp code which returns the amount of data also
 // returned by read.
 int kvfs_read_impl(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
-	return -1;
+	log_msg("kvfs_read_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Write data to an open file
@@ -161,7 +165,9 @@ int kvfs_read_impl(const char *path, char *buf, size_t size, off_t offset, struc
 // As  with read(), the documentation above is inconsistent with the
 // documentation for the write() system call.
 int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
-	return -1;
+	rlog_msg("kvfs_writ_impl called\n");
+	return 0;
+eturn -1;
 }
 
 /** Get file system statistics
@@ -172,7 +178,9 @@ int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset
  * version 2.5
  */
 int kvfs_statfs_impl(const char *path, struct statvfs *statv) {
-	return -1;
+	rlog_msg("kvfs_statfs_impl called\n");
+	return 0;
+eturn -1;
 }
 
 /** Possibly flush cached data
@@ -222,7 +230,9 @@ int kvfs_flush_impl(const char *path, struct fuse_file_info *fi) {
  * Changed in version 2.2
  */
 int kvfs_release_impl(const char *path, struct fuse_file_info *fi) {
-	return -1;
+	log_msg("kvfs_release_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Synchronize file contents
