@@ -1,21 +1,21 @@
 /*
-  Key Value System
-  Copyright (C) 2016 Hung-Wei Tseng, Ph.D. <hungwei_tseng@ncsu.edu>
+ Key Value System
+ Copyright (C) 2016 Hung-Wei Tseng, Ph.D. <hungwei_tseng@ncsu.edu>
 
-  This program can be distributed under the terms of the GNU GPLv3.
-  See the file COPYING.
+ This program can be distributed under the terms of the GNU GPLv3.
+ See the file COPYING.
 
-  This code is derived from function prototypes found /usr/include/fuse/fuse.h
-  Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
-  His code is licensed under the LGPLv2.
-  A copy of that code is included in the file fuse.h
-  
-  The point of this FUSE filesystem is to provide an introduction to
-  FUSE.  It was my first FUSE filesystem as I got to know the
-  software; hopefully, the comments in this code will help people who
-  follow later to get a gentler introduction.
+ This code is derived from function prototypes found /usr/include/fuse/fuse.h
+ Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
+ His code is licensed under the LGPLv2.
+ A copy of that code is included in the file fuse.h
 
-*/
+ The point of this FUSE filesystem is to provide an introduction to
+ FUSE.  It was my first FUSE filesystem as I got to know the
+ software; hopefully, the comments in this code will help people who
+ follow later to get a gentler introduction.
+
+ */
 
 #include "kvfs.h"
 
@@ -30,9 +30,8 @@
  * ignored.  The 'st_ino' field is ignored except if the 'use_ino'
  * mount option is given.
  */
-int kvfs_getattr_impl(const char *path, struct stat *statbuf)
-{
-    return -1;
+int kvfs_getattr_impl(const char *path, struct stat *statbuf) {
+	return -1;
 }
 
 /** Read the target of a symbolic link
@@ -47,9 +46,8 @@ int kvfs_getattr_impl(const char *path, struct stat *statbuf)
 // null.  So, the size passed to to the system readlink() must be one
 // less than the size passed to kvfs_readlink()
 // kvfs_readlink() code by Bernardo F Costa (thanks!)
-int kvfs_readlink_impl(const char *path, char *link, size_t size)
-{
-    return -1;
+int kvfs_readlink_impl(const char *path, char *link, size_t size) {
+	return -1;
 }
 
 /** Create a file node
@@ -58,27 +56,23 @@ int kvfs_readlink_impl(const char *path, char *link, size_t size)
  * creation of all non-directory, non-symlink nodes.
  */
 // shouldn't that comment be "if" there is no.... ?
-int kvfs_mknod_impl(const char *path, mode_t mode, dev_t dev)
-{
-    return -1;
+int kvfs_mknod_impl(const char *path, mode_t mode, dev_t dev) {
+	return -1;
 }
 
 /** Create a directory */
-int kvfs_mkdir_impl(const char *path, mode_t mode)
-{
-    return -1;
+int kvfs_mkdir_impl(const char *path, mode_t mode) {
+	return -1;
 }
 
 /** Remove a file */
-int kvfs_unlink_impl(const char *path)
-{
-    return -1;
+int kvfs_unlink_impl(const char *path) {
+	return -1;
 }
 
 /** Remove a directory */
-int kvfs_rmdir_impl(const char *path)
-{
-    return -1;
+int kvfs_rmdir_impl(const char *path) {
+	return -1;
 }
 
 /** Create a symbolic link */
@@ -86,47 +80,40 @@ int kvfs_rmdir_impl(const char *path)
 // to the symlink() system call.  The 'path' is where the link points,
 // while the 'link' is the link itself.  So we need to leave the path
 // unaltered, but insert the link into the mounted directory.
-int kvfs_symlink_impl(const char *path, const char *link)
-{
-    return -1;
+int kvfs_symlink_impl(const char *path, const char *link) {
+	return -1;
 }
 
 /** Rename a file */
 // both path and newpath are fs-relative
-int kvfs_rename_impl(const char *path, const char *newpath)
-{
-    return -1;
+int kvfs_rename_impl(const char *path, const char *newpath) {
+	return -1;
 }
 
 /** Create a hard link to a file */
-int kvfs_link_impl(const char *path, const char *newpath)
-{
-    return -1;
+int kvfs_link_impl(const char *path, const char *newpath) {
+	return -1;
 }
 
 /** Change the permission bits of a file */
-int kvfs_chmod_impl(const char *path, mode_t mode)
-{
-    return -1;
+int kvfs_chmod_impl(const char *path, mode_t mode) {
+	return -1;
 }
 
 /** Change the owner and group of a file */
-int kvfs_chown_impl(const char *path, uid_t uid, gid_t gid)
-{
-    return -1;
+int kvfs_chown_impl(const char *path, uid_t uid, gid_t gid) {
+	return -1;
 }
 
 /** Change the size of a file */
-int kvfs_truncate_impl(const char *path, off_t newsize)
-{
-    return -1;
+int kvfs_truncate_impl(const char *path, off_t newsize) {
+	return -1;
 }
 
 /** Change the access and/or modification times of a file */
 /* note -- I'll want to change this as soon as 2.6 is in debian testing */
-int kvfs_utime_impl(const char *path, struct utimbuf *ubuf)
-{
-    return -1;
+int kvfs_utime_impl(const char *path, struct utimbuf *ubuf) {
+	return -1;
 }
 
 /** File open operation
@@ -139,9 +126,8 @@ int kvfs_utime_impl(const char *path, struct utimbuf *ubuf)
  *
  * Changed in version 2.2
  */
-int kvfs_open_impl(const char *path, struct fuse_file_info *fi)
-{
-    return -1;
+int kvfs_open_impl(const char *path, struct fuse_file_info *fi) {
+	return -1;
 }
 
 /** Read data from an open file
@@ -160,9 +146,8 @@ int kvfs_open_impl(const char *path, struct fuse_file_info *fi)
 // can return with anything up to the amount of data requested. nor
 // with the fusexmp code which returns the amount of data also
 // returned by read.
-int kvfs_read_impl(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
-{
-    return -1;
+int kvfs_read_impl(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
+	return -1;
 }
 
 /** Write data to an open file
@@ -175,10 +160,8 @@ int kvfs_read_impl(const char *path, char *buf, size_t size, off_t offset, struc
  */
 // As  with read(), the documentation above is inconsistent with the
 // documentation for the write() system call.
-int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset,
-	     struct fuse_file_info *fi)
-{
-    return -1;
+int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
+	return -1;
 }
 
 /** Get file system statistics
@@ -188,9 +171,8 @@ int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset
  * Replaced 'struct statfs' parameter with 'struct statvfs' in
  * version 2.5
  */
-int kvfs_statfs_impl(const char *path, struct statvfs *statv)
-{
-    return -1;
+int kvfs_statfs_impl(const char *path, struct statvfs *statv) {
+	return -1;
 }
 
 /** Possibly flush cached data
@@ -217,13 +199,12 @@ int kvfs_statfs_impl(const char *path, struct statvfs *statv)
  * Changed in version 2.2
  */
 // this is a no-op in BBFS.  It just logs the call and returns success
-int kvfs_flush_impl(const char *path, struct fuse_file_info *fi)
-{
-    log_msg("\nkvfs_flush(path=\"%s\", fi=0x%08x)\n", path, fi);
-    // no need to get fpath on this one, since I work from fi->fh not the path
-    log_fi(fi);
-	
-    return 0;
+int kvfs_flush_impl(const char *path, struct fuse_file_info *fi) {
+	log_msg("\nkvfs_flush(path=\"%s\", fi=0x%08x)\n", path, fi);
+	// no need to get fpath on this one, since I work from fi->fh not the path
+	log_fi(fi);
+
+	return 0;
 }
 
 /** Release an open file
@@ -240,9 +221,8 @@ int kvfs_flush_impl(const char *path, struct fuse_file_info *fi)
  *
  * Changed in version 2.2
  */
-int kvfs_release_impl(const char *path, struct fuse_file_info *fi)
-{
-    return -1;
+int kvfs_release_impl(const char *path, struct fuse_file_info *fi) {
+	return -1;
 }
 
 /** Synchronize file contents
@@ -252,34 +232,33 @@ int kvfs_release_impl(const char *path, struct fuse_file_info *fi)
  *
  * Changed in version 2.2
  */
-int kvfs_fsync_impl(const char *path, int datasync, struct fuse_file_info *fi)
-{
-    return -1;
+int kvfs_fsync_impl(const char *path, int datasync, struct fuse_file_info *fi) {
+	return -1;
 }
 
 #ifdef HAVE_SYS_XATTR_H
 /** Set extended attributes */
 int kvfs_setxattr_impl(const char *path, const char *name, const char *value, size_t size, int flags)
 {
-    return -1;
+	return -1;
 }
 
 /** Get extended attributes */
 int kvfs_getxattr_impl(const char *path, const char *name, char *value, size_t size)
 {
-    return -1;
+	return -1;
 }
 
 /** List extended attributes */
 int kvfs_listxattr_impl(const char *path, char *list, size_t size)
 {
-    return -1;
+	return -1;
 }
 
 /** Remove extended attributes */
 int kvfs_removexattr_impl(const char *path, const char *name)
 {
-    return -1;
+	return -1;
 }
 #endif
 
@@ -290,9 +269,8 @@ int kvfs_removexattr_impl(const char *path, const char *name)
  *
  * Introduced in version 2.3
  */
-int kvfs_opendir_impl(const char *path, struct fuse_file_info *fi)
-{
-    return -1;
+int kvfs_opendir_impl(const char *path, struct fuse_file_info *fi) {
+	return -1;
 }
 
 /** Read directory
@@ -317,19 +295,16 @@ int kvfs_opendir_impl(const char *path, struct fuse_file_info *fi)
  * Introduced in version 2.3
  */
 
-int kvfs_readdir_impl(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset,
-	       struct fuse_file_info *fi)
-{
-    return -1;
+int kvfs_readdir_impl(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi) {
+	return -1;
 }
 
 /** Release directory
  *
  * Introduced in version 2.3
  */
-int kvfs_releasedir_impl(const char *path, struct fuse_file_info *fi)
-{
-    return -1;
+int kvfs_releasedir_impl(const char *path, struct fuse_file_info *fi) {
+	return -1;
 }
 
 /** Synchronize directory contents
@@ -341,14 +316,12 @@ int kvfs_releasedir_impl(const char *path, struct fuse_file_info *fi)
  */
 // when exactly is this called?  when a user calls fsync and it
 // happens to be a directory? ??? >>> I need to implement this...
-int kvfs_fsyncdir_impl(const char *path, int datasync, struct fuse_file_info *fi)
-{
-    return -1;
+int kvfs_fsyncdir_impl(const char *path, int datasync, struct fuse_file_info *fi) {
+	return -1;
 }
 
-int kvfs_access_impl(const char *path, int mask)
-{
-    return -1;
+int kvfs_access_impl(const char *path, int mask) {
+	return -1;
 }
 
 /**
@@ -365,7 +338,6 @@ int kvfs_access_impl(const char *path, int mask)
  */
 // Not implemented.  I had a version that used creat() to create and
 // open the file, which it turned out opened the file write-only.
-
 /**
  * Change the size of an open file
  *
@@ -378,9 +350,8 @@ int kvfs_access_impl(const char *path, int mask)
  *
  * Introduced in version 2.5
  */
-int kvfs_ftruncate_impl(const char *path, off_t offset, struct fuse_file_info *fi)
-{
-    return -1;
+int kvfs_ftruncate_impl(const char *path, off_t offset, struct fuse_file_info *fi) {
+	return -1;
 }
 
 /**
@@ -395,8 +366,7 @@ int kvfs_ftruncate_impl(const char *path, off_t offset, struct fuse_file_info *f
  *
  * Introduced in version 2.5
  */
-int kvfs_fgetattr_impl(const char *path, struct stat *statbuf, struct fuse_file_info *fi)
-{
-    return -1;
+int kvfs_fgetattr_impl(const char *path, struct stat *statbuf, struct fuse_file_info *fi) {
+	return -1;
 }
 
