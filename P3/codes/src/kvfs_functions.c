@@ -246,7 +246,7 @@ int kvfs_read_impl(const char *path, char *buf, size_t size, off_t offset, struc
 int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
 	log_msg("kvfs_writ_impl called\n");
 
-	log_msg("\n\nWriting a file with FD = %d\n\n", fi->fd);
+	log_msg("\n\nWriting a file with FD = %d\n\n", fi->fh);
 	int status = pwrite(fi->fh, buf, size, offset);
 	if (status == -1)
 		return -errno;
