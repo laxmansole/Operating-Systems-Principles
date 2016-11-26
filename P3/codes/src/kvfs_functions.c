@@ -70,14 +70,26 @@ int kvfs_readlink_impl(const char *path, char *link, size_t size) {
 // shouldn't that comment be "if" there is no.... ?
 int kvfs_mknod_impl(const char *path, mode_t mode, dev_t dev) {
 	log_msg("kvfs_mknod_impl called\n");
+
+	int res;
+	if (S_ISFIFO(mode))
+		res = mkfifo(path, mode);
+	else
+		res = mknod(path, mode, dev);
+	if (res == -1)
+		return -errno;
+
 	return 0;
-	return -1;
 }
 
 /** Create a directory */
 int kvfs_mkdir_impl(const char *path, mode_t mode) {
 	log_msg("kvfs_mkdir_impl called\n");
-	return mkdir(path,mode);
+	int status = mkdir(path,mode);
+	if(status == -1)
+		return -errno;
+	return 0;
+
 	return -1;
 }
 
