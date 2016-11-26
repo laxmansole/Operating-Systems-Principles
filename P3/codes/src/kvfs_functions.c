@@ -110,15 +110,24 @@ int kvfs_mkdir_impl(const char *path, mode_t mode) {
 /** Remove a file */
 int kvfs_unlink_impl(const char *path) {
 	log_msg("kvfs_unlink_impl called\n");
+
+	char * updated = check_path(path);
+	int status =unlink(updated);
+
+	if(status == -1)
+		return -errno;
 	return 0;
-	return -1;
 }
 
 /** Remove a directory */
 int kvfs_rmdir_impl(const char *path) {
 	log_msg("kvfs_rmdir_impl called\n");
+	char * updated = check_path(path);
+	int status = rmdir(updated);
+
+	if(status == -1)
+		return -errno;
 	return 0;
-	return -1;
 }
 
 /** Create a symbolic link */
@@ -128,45 +137,71 @@ int kvfs_rmdir_impl(const char *path) {
 // unaltered, but insert the link into the mounted directory.
 int kvfs_symlink_impl(const char *path, const char *link) {
 	log_msg("kvfs_symlink_impl called\n");
+	//char * updated  = check_path(path);
+	char * updated2 = check_path(link);
+	int status = symlink(path, updated2);
+
+	if(status == -1)
+		return -errno;
 	return 0;
-	return -1;
 }
 
 /** Rename a file */
 // both path and newpath are fs-relative
 int kvfs_rename_impl(const char *path, const char *newpath) {
 	log_msg("kvfs_rename_impl called\n");
+	char * updated  = check_path(path);
+	char * updated2 = check_path(newpath);
+	int status = rename(updated,updated2);
+
+	if(status == -1)
+		return -errno;
 	return 0;
-	return -1;
 }
 
 /** Create a hard link to a file */
 int kvfs_link_impl(const char *path, const char *newpath) {
 	log_msg("kvfs_link_impl called\n");
+	char * updated  = check_path(path);
+	char * updated2 = check_path(newpath);
+	int status = link(updated,updated2);
+
+	if(status == -1)
+		return -errno;
 	return 0;
-	return -1;
 }
 
 /** Change the permission bits of a file */
 int kvfs_chmod_impl(const char *path, mode_t mode) {
 	log_msg("kvfs_chmod_impl called\n");
+	char * updated = check_path(path);
+	int status = chmod(updated,mode);
+
+	if(status == -1)
+		return -errno;
 	return 0;
-	return -1;
 }
 
 /** Change the owner and group of a file */
 int kvfs_chown_impl(const char *path, uid_t uid, gid_t gid) {
 	log_msg("kvfs_chown_impl called\n");
+	char * updated = check_path(path);
+	int status = lchown(updated,uid,gid);
+
+	if(status == -1)
+		return -errno;
 	return 0;
-	return -1;
 }
 
 /** Change the size of a file */
 int kvfs_truncate_impl(const char *path, off_t newsize) {
 	log_msg("kvfs_truncate_impl called\n");
-	return 0;
+	char * updated = check_path(path);
+	int status = truncate(updated,newsize);
 
-	return -1;
+	if(status == -1)
+		return -errno;
+	return 0;
 }
 
 /** Change the access and/or modification times of a file */
