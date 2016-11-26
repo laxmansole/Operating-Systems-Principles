@@ -571,7 +571,7 @@ int kvfs_ftruncate_impl(const char *path, off_t offset, struct fuse_file_info *f
 int kvfs_fgetattr_impl(const char *path, struct stat *statbuf, struct fuse_file_info *fi) {
 	log_msg("kvfs_fgetattr_impl called\n");
 
-	int status = fstat(fi->fh, stbuf);
+	int status = fstat(fi->fh, statbuf);
 	if (status == -1)
 		return -errno;
 
