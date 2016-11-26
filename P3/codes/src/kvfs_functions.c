@@ -33,6 +33,9 @@
 int kvfs_getattr_impl(const char *path, struct stat *statbuf) {
 	log_msg("kvfs_getattr_impl called\n");
 	int status;
+	
+	// md5 for /mnt/lsole: 9dc7ba184fa184338cd1646f964d4baf
+	
 	if(strcmp(path, "6666cd76f96956469e7be39d750cc7d9") == 0)
 		status = lstat("/mnt/myfs/", statbuf);
 	else
