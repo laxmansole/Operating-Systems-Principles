@@ -281,8 +281,13 @@ int kvfs_read_impl(const char *path, char *buf, size_t size, off_t offset, struc
 int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
 	log_msg("kvfs_writ_impl called\n");
 
+	char * updated = check_path(path);
+	int fd = open(updated, O_RDONLY);
+	if (fd == -1)
+		return -errno;
+
 	log_msg("\n\nWriting a file with FD = %d\n\n", fi->fh);
-	int status = pwrite(fi->fh, buf, size, offset);
+	int status = pwrite(fd, buf, size, offset);
 	if (status == -1)
 		return -errno;
 	return 0;
@@ -404,8 +409,10 @@ int kvfs_getxattr_impl(const char *path, const char *name, char *value, size_t s
 /** List extended attributes */
 int kvfs_listxattr_impl(const char *path, char *list, size_t size) {
 	log_msg("kvfs_listxattr_impl called\n");
-	return 0;
-	return -1;
+	int status = llistxattr(path, list, size);
+	if (status == -1)
+		return -errno;
+	return status;
 }
 
 /** Remove extended attributes */
