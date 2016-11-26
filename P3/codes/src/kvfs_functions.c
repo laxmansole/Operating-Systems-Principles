@@ -261,8 +261,8 @@ int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset
 int kvfs_statfs_impl(const char *path, struct statvfs *statv) {
 	log_msg("kvfs_statfs_impl called\n");
 
-	char * updated = check_path(path);
-	int status = statvfs(updated, statv);
+	/* char * updated = check_path(path); */
+	int status = statvfs(path, statv);
 	if(status == -1)
 		return -errno;
 
@@ -298,6 +298,10 @@ int kvfs_flush_impl(const char *path, struct fuse_file_info *fi) {
 	// no need to get fpath on this one, since I work from fi->fh not the path
 	log_fi(fi);
 
+	int status = close(dup(fi->fh));
+	if(status == -1)
+		return -errno;
+
 	return 0;
 }
 
@@ -317,8 +321,10 @@ int kvfs_flush_impl(const char *path, struct fuse_file_info *fi) {
  */
 int kvfs_release_impl(const char *path, struct fuse_file_info *fi) {
 	log_msg("kvfs_release_impl called\n");
+
+	int status = close(fi->fh);
+
 	return 0;
-	return -1;
 }
 
 /** Synchronize file contents
@@ -330,8 +336,17 @@ int kvfs_release_impl(const char *path, struct fuse_file_info *fi) {
  */
 int kvfs_fsync_impl(const char *path, int datasync, struct fuse_file_info *fi) {
 	log_msg("kvfs_fsync_impl called\n");
+
+	int status;
+	if(datasync)
+		status = fdatasync(fi->fh);
+	else
+		status = fsync(fi->fh);
+
+	if(status == -1)
+		return -errno;
+
 	return 0;
-	return -1;
 }
 
 #ifdef HAVE_SYS_XATTR_H
