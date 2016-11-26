@@ -15,15 +15,27 @@
    software; hopefully, the comments in this code will help people who
    follow later to get a gentler introduction.
 
- */
+*/
 
 #include "kvfs.h"
+
+char * check_path(const char * path){
+	char *relative = (char *) malloc(1024*sizeof(char));
+	sprintf(relative, KVFS_DATA->rootdir);
+	strcat(relative, "/");
+	strcat(relative, path);
+
+	if(strcmp(path, "6666cd76f96956469e7be39d750cc7d9") == 0)
+		return KVFS_DATA->rootdir;
+	return relative;
+}
 
 ///////////////////////////////////////////////////////////
 //
 // Prototypes for all these functions, and the C-style comments,
 // come from /usr/include/fuse.h
 //
+
 /** Get file attributes.
  *
  * Similar to stat().  The 'st_dev' and 'st_blksize' fields are
@@ -35,16 +47,9 @@ int kvfs_getattr_impl(const char *path, struct stat *statbuf) {
 	int status;
 
 	// md5 for /mnt/lsole: 9dc7ba184fa184338cd1646f964d4baf
-	log_msg("%s\n",KVFS_DATA->rootdir);
-	if(strcmp(path, "6666cd76f96956469e7be39d750cc7d9") == 0)
-	{
-		log_msg("I am here 1\n");
-		status = lstat("/home/lsole/test", statbuf);
-	}else
-	{
-		log_msg("I am here 2\n");
-		status = lstat(path, statbuf);
-	}
+	char * updated = check_path(path);
+	status = lstat(updated, statbuf);
+
 	if(status == -1)
 		return -errno;
 
@@ -79,10 +84,11 @@ int kvfs_mknod_impl(const char *path, mode_t mode, dev_t dev) {
 	log_msg("kvfs_mknod_impl called\n");
 
 	int res;
+	char * updated = check_path(path);
 	if (S_ISFIFO(mode))
-		res = mkfifo(path, mode);
+		res = mkfifo(updated, mode);
 	else
-		res = mknod(path, mode, dev);
+		res = mknod(updated, mode, dev);
 	if (res == -1)
 		return -errno;
 
@@ -92,12 +98,13 @@ int kvfs_mknod_impl(const char *path, mode_t mode, dev_t dev) {
 /** Create a directory */
 int kvfs_mkdir_impl(const char *path, mode_t mode) {
 	log_msg("kvfs_mkdir_impl called\n");
-	int status = mkdir(path,mode);
+
+	char * updated = check_path(path);
+	int status = mkdir(updated,mode);
+
 	if(status == -1)
 		return -errno;
 	return 0;
-
-	return -1;
 }
 
 /** Remove a file */
@@ -183,7 +190,8 @@ int kvfs_utime_impl(const char *path, struct utimbuf *ubuf) {
 int kvfs_open_impl(const char *path, struct fuse_file_info *fi) {
 	log_msg("kvfs_open_impl called\n");
 
-	int fd = open(path, fi->flags);
+	char * updated = check_path(path);
+	int fd = open(updated, fi->flags);
 	if (fd == -1)
 		return -errno;
 
@@ -210,7 +218,8 @@ int kvfs_open_impl(const char *path, struct fuse_file_info *fi) {
 int kvfs_read_impl(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
 	log_msg("kvfs_read_impl called\n");
 
-	int fd = open(path, O_RDONLY);
+	char * updated = check_path(path);
+	int fd = open(updated, O_RDONLY);
 	if (fd == -1)
 		return -errno;
 
@@ -235,8 +244,11 @@ int kvfs_read_impl(const char *path, char *buf, size_t size, off_t offset, struc
 // documentation for the write() system call.
 int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
 	log_msg("kvfs_writ_impl called\n");
+
+	int status = pwrite(fi->fh, buf, size, offset);
+	if (status == -1)
+		return -errno;
 	return 0;
-	return -1;
 }
 
 /** Get file system statistics
@@ -248,12 +260,13 @@ int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset
  */
 int kvfs_statfs_impl(const char *path, struct statvfs *statv) {
 	log_msg("kvfs_statfs_impl called\n");
-	int status = statvfs(path, statv);
+
+	char * updated = check_path(path);
+	int status = statvfs(updated, statv);
 	if(status == -1)
 		return -errno;
 
 	return 0;
-	return -1;
 }
 
 /** Possibly flush cached data
@@ -362,21 +375,15 @@ int kvfs_removexattr_impl(const char *path, const char *name)
 int kvfs_opendir_impl(const char *path, struct fuse_file_info *fi) {
 	DIR *dh=NULL;
 	log_msg("kvfs_opendir_impl called\n");
-	if(strcmp(path, "6666cd76f96956469e7be39d750cc7d9") == 0)
-	{
-		log_msg("here 3\n");
-		dh = opendir(KVFS_DATA->rootdir);
-	}
-	else{
-		log_msg("here 4\n");
-		dh = opendir(path);		
-	}
+
+	char * updated = check_path(path);
+
+	dh = opendir(updated);
 	if(dh == NULL)
 		return -errno;
 
 	fi->fh = (unsigned long) dh;
 	return 0;
-	return -1;
 }
 
 /** Read directory
@@ -407,10 +414,8 @@ int kvfs_readdir_impl(const char *path, void *buf, fuse_fill_dir_t filler, off_t
 	DIR *dp;
 	struct dirent *de;
 
-	(void) offset;
-	(void) fi;
-
-	dp = opendir(path);
+	char * updated = check_path(path);
+	dp = opendir(updated);
 	if (dp == NULL)
 		return -errno;
 
@@ -425,7 +430,6 @@ int kvfs_readdir_impl(const char *path, void *buf, fuse_fill_dir_t filler, off_t
 
 	closedir(dp);
 	return 0;
-	return -1;
 }
 
 /** Release directory
@@ -458,18 +462,14 @@ int kvfs_access_impl(const char *path, int mask) {
 	int status = 0;
 	log_msg("kvfs_access_impl called\n");
 	log_msg("%s\n",path);
-	if(strcmp(path, "6666cd76f96956469e7be39d750cc7d9") == 0)
-	{
-		status = access(KVFS_DATA->rootdir, mask);
-	}else
-	{
-	 	status = access(path, mask);	
-	}
+
+	char * updated = check_path(path);
+
+	status = access(updated, mask);
 	if(status == -1)
 		return -errno;
 
 	return 0;
-	return -1;
 }
 
 /**
@@ -521,3 +521,4 @@ int kvfs_fgetattr_impl(const char *path, struct stat *statbuf, struct fuse_file_
 	return 0;
 	return -1;
 }
+
