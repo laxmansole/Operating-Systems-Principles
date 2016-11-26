@@ -31,7 +31,9 @@
  * mount option is given.
  */
 int kvfs_getattr_impl(const char *path, struct stat *statbuf) {
-	return -1;
+	log_msg("kvfs_getattr_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Read the target of a symbolic link
@@ -47,7 +49,9 @@ int kvfs_getattr_impl(const char *path, struct stat *statbuf) {
 // less than the size passed to kvfs_readlink()
 // kvfs_readlink() code by Bernardo F Costa (thanks!)
 int kvfs_readlink_impl(const char *path, char *link, size_t size) {
-	return -1;
+	log_msg("kvfs_readlink_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Create a file node
@@ -57,22 +61,30 @@ int kvfs_readlink_impl(const char *path, char *link, size_t size) {
  */
 // shouldn't that comment be "if" there is no.... ?
 int kvfs_mknod_impl(const char *path, mode_t mode, dev_t dev) {
-	return -1;
+	log_msg("kvfs_mknod_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Create a directory */
 int kvfs_mkdir_impl(const char *path, mode_t mode) {
-	return -1;
+	log_msg("kvfs_mkdir_impl called\n");
+	return mkdir(path,mode);
+return -1;
 }
 
 /** Remove a file */
 int kvfs_unlink_impl(const char *path) {
-	return -1;
+	log_msg("kvfs_unlink_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Remove a directory */
 int kvfs_rmdir_impl(const char *path) {
-	return -1;
+	log_msg("kvfs_rmdir_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Create a symbolic link */
@@ -81,39 +93,54 @@ int kvfs_rmdir_impl(const char *path) {
 // while the 'link' is the link itself.  So we need to leave the path
 // unaltered, but insert the link into the mounted directory.
 int kvfs_symlink_impl(const char *path, const char *link) {
-	return -1;
+		log_msg("kvfs_symlink_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Rename a file */
 // both path and newpath are fs-relative
 int kvfs_rename_impl(const char *path, const char *newpath) {
-	return -1;
+	log_msg("kvfs_rename_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Create a hard link to a file */
 int kvfs_link_impl(const char *path, const char *newpath) {
-	return -1;
+	log_msg("kvfs_link_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Change the permission bits of a file */
 int kvfs_chmod_impl(const char *path, mode_t mode) {
-	return -1;
+	log_msg("kvfs_chmod_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Change the owner and group of a file */
 int kvfs_chown_impl(const char *path, uid_t uid, gid_t gid) {
-	return -1;
+	log_msg("kvfs_chown_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Change the size of a file */
 int kvfs_truncate_impl(const char *path, off_t newsize) {
+	log_msg("kvfs_truncate_impl called\n");
+	return 0;
+
 	return -1;
 }
 
 /** Change the access and/or modification times of a file */
 /* note -- I'll want to change this as soon as 2.6 is in debian testing */
 int kvfs_utime_impl(const char *path, struct utimbuf *ubuf) {
-	return -1;
+	log_msg("kvfs_utime_impl called\n");
+	return 0;
+return -1;
 }
 
 /** File open operation
@@ -165,9 +192,9 @@ return -1;
 // As  with read(), the documentation above is inconsistent with the
 // documentation for the write() system call.
 int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
-	rlog_msg("kvfs_writ_impl called\n");
+	log_msg("kvfs_writ_impl called\n");
 	return 0;
-eturn -1;
+return -1;
 }
 
 /** Get file system statistics
@@ -178,9 +205,9 @@ eturn -1;
  * version 2.5
  */
 int kvfs_statfs_impl(const char *path, struct statvfs *statv) {
-	rlog_msg("kvfs_statfs_impl called\n");
+	log_msg("kvfs_statfs_impl called\n");
 	return 0;
-eturn -1;
+return -1;
 }
 
 /** Possibly flush cached data
@@ -243,32 +270,42 @@ return -1;
  * Changed in version 2.2
  */
 int kvfs_fsync_impl(const char *path, int datasync, struct fuse_file_info *fi) {
-	return -1;
+	log_msg("kvfs_fsync_impl called\n");
+	return 0;
+return -1;
 }
 
 #ifdef HAVE_SYS_XATTR_H
 /** Set extended attributes */
 int kvfs_setxattr_impl(const char *path, const char *name, const char *value, size_t size, int flags)
 {
-	return -1;
+	log_msg("kvfs_setxattr_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Get extended attributes */
 int kvfs_getxattr_impl(const char *path, const char *name, char *value, size_t size)
 {
-	return -1;
+	log_msg("kvfs_getxattr_impl called\n");
+	return 0;
+return -1;
 }
 
 /** List extended attributes */
 int kvfs_listxattr_impl(const char *path, char *list, size_t size)
 {
-	return -1;
+	log_msg("kvfs_listxattr_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Remove extended attributes */
 int kvfs_removexattr_impl(const char *path, const char *name)
 {
-	return -1;
+	log_msg("kvfs_removexattr_impl called\n");
+	return 0;
+return -1;
 }
 #endif
 
@@ -280,7 +317,9 @@ int kvfs_removexattr_impl(const char *path, const char *name)
  * Introduced in version 2.3
  */
 int kvfs_opendir_impl(const char *path, struct fuse_file_info *fi) {
-	return -1;
+	log_msg("kvfs_opendir_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Read directory
@@ -306,7 +345,9 @@ int kvfs_opendir_impl(const char *path, struct fuse_file_info *fi) {
  */
 
 int kvfs_readdir_impl(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi) {
-	return -1;
+	log_msg("kvfs_readdir_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Release directory
@@ -314,7 +355,9 @@ int kvfs_readdir_impl(const char *path, void *buf, fuse_fill_dir_t filler, off_t
  * Introduced in version 2.3
  */
 int kvfs_releasedir_impl(const char *path, struct fuse_file_info *fi) {
-	return -1;
+	log_msg("kvfs_releasedir_impl called\n");
+	return 0;
+return -1;
 }
 
 /** Synchronize directory contents
@@ -327,11 +370,15 @@ int kvfs_releasedir_impl(const char *path, struct fuse_file_info *fi) {
 // when exactly is this called?  when a user calls fsync and it
 // happens to be a directory? ??? >>> I need to implement this...
 int kvfs_fsyncdir_impl(const char *path, int datasync, struct fuse_file_info *fi) {
-	return -1;
+	log_msg("kvfs_fsyncdir_impl called\n");
+	return 0;
+return -1;
 }
 
 int kvfs_access_impl(const char *path, int mask) {
-	return -1;
+	log_msg("kvfs_access_impl called\n");
+	return 0;
+return -1;
 }
 
 /**
@@ -361,7 +408,9 @@ int kvfs_access_impl(const char *path, int mask) {
  * Introduced in version 2.5
  */
 int kvfs_ftruncate_impl(const char *path, off_t offset, struct fuse_file_info *fi) {
-	return -1;
+	log_msg("kvfs_ftruncate_impl called\n");
+	return 0;
+return -1;
 }
 
 /**
@@ -377,5 +426,7 @@ int kvfs_ftruncate_impl(const char *path, off_t offset, struct fuse_file_info *f
  * Introduced in version 2.5
  */
 int kvfs_fgetattr_impl(const char *path, struct stat *statbuf, struct fuse_file_info *fi) {
-	return -1;
+	log_msg("kvfs_fgetattr_impl called\n");
+	return 0;
+return -1;
 }
