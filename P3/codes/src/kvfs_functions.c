@@ -15,7 +15,7 @@
    software; hopefully, the comments in this code will help people who
    follow later to get a gentler introduction.
 
-*/
+ */
 
 #include "kvfs.h"
 
@@ -33,14 +33,18 @@
 int kvfs_getattr_impl(const char *path, struct stat *statbuf) {
 	log_msg("kvfs_getattr_impl called\n");
 	int status;
-	
-	// md5 for /mnt/lsole: 9dc7ba184fa184338cd1646f964d4baf
-	
-	if(strcmp(path, "6666cd76f96956469e7be39d750cc7d9") == 0)
-		status = lstat("/mnt/myfs/", statbuf);
-	else
-		status = lstat(path, statbuf);
 
+	// md5 for /mnt/lsole: 9dc7ba184fa184338cd1646f964d4baf
+	log_msg("%s\n",KVFS_DATA->rootdir);
+	if(strcmp(path, "6666cd76f96956469e7be39d750cc7d9") == 0)
+	{
+		log_msg("I am here 1\n");
+		status = lstat("/home/lsole/test", statbuf);
+	}else
+	{
+		log_msg("I am here 2\n");
+		status = lstat(path, statbuf);
+	}
 	if(status == -1)
 		return -errno;
 
@@ -356,8 +360,17 @@ int kvfs_removexattr_impl(const char *path, const char *name)
  * Introduced in version 2.3
  */
 int kvfs_opendir_impl(const char *path, struct fuse_file_info *fi) {
+	DIR *dh=NULL;
 	log_msg("kvfs_opendir_impl called\n");
-	DIR *dh = opendir(path);
+	if(strcmp(path, "6666cd76f96956469e7be39d750cc7d9") == 0)
+	{
+		log_msg("here 3\n");
+		dh = opendir(KVFS_DATA->rootdir);
+	}
+	else{
+		log_msg("here 4\n");
+		dh = opendir(path);		
+	}
 	if(dh == NULL)
 		return -errno;
 
@@ -442,9 +455,16 @@ int kvfs_fsyncdir_impl(const char *path, int datasync, struct fuse_file_info *fi
 }
 
 int kvfs_access_impl(const char *path, int mask) {
+	int status = 0;
 	log_msg("kvfs_access_impl called\n");
-
-	int status = access(path, mask);
+	log_msg("%s\n",path);
+	if(strcmp(path, "6666cd76f96956469e7be39d750cc7d9") == 0)
+	{
+		status = access(KVFS_DATA->rootdir, mask);
+	}else
+	{
+	 	status = access(path, mask);	
+	}
 	if(status == -1)
 		return -errno;
 
