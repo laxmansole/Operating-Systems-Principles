@@ -282,7 +282,7 @@ int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset
 	log_msg("kvfs_writ_impl called\n");
 
 	char * updated = check_path(path);
-	int fd = open(updated, O_RDONLY);
+	int fd = open(updated, O_RDWR | O_APPEND | O_CREAT);
 	if (fd == -1)
 		return -errno;
 
