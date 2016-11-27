@@ -26,7 +26,11 @@ char * check_path(const char * path){
 	strcat(relative, path);
 
 	if(strcmp(path, "6666cd76f96956469e7be39d750cc7d9") == 0)
-		return KVFS_DATA->rootdir;
+	{
+			log_msg("ROOT_DIR = %s\n",KVFS_DATA->rootdir);
+			return KVFS_DATA->rootdir;
+	}
+	log_msg("relative = %s \npath = %s\n",relative, path);
 	return relative;
 }
 
@@ -48,6 +52,7 @@ int kvfs_getattr_impl(const char *path, struct stat *statbuf) {
 
 	// md5 for /mnt/lsole: 9dc7ba184fa184338cd1646f964d4baf
 	char * updated = check_path(path);
+	log_msg("In getattr: updated = %s\n",updated);
 	status = lstat(updated, statbuf);
 
 	if(status == -1)
@@ -231,7 +236,7 @@ int kvfs_open_impl(const char *path, struct fuse_file_info *fi) {
 		return -errno;
 
 	fi->fh = fd;
-	log_msg("\n\nOpened a file with FD = %d\n\n", fd);
+	// log_msg("\n\nOpened a file with FD = %d\n\n", fd);
 	return 0;
 }
 
@@ -287,7 +292,7 @@ int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset
 	if (fd == -1)
 		return -errno;
 
-	log_msg("\n\nWriting a file with FD = %d\n\n", fi->fh);
+	// log_msg("\n\nWriting a file with FD = %d\n\n", fi->fh);
 	int status = pwrite(fd, buf, size, offset);
 	if (status == -1)
 		return -errno;
