@@ -208,8 +208,13 @@ int kvfs_truncate_impl(const char *path, off_t newsize) {
 /* note -- I'll want to change this as soon as 2.6 is in debian testing */
 int kvfs_utime_impl(const char *path, struct utimbuf *ubuf) {
 	log_msg("kvfs_utime_impl called\n");
+
+	char * updated = check_path(path);
+	int status = utime(updated, ubuf);
+	if (status == -1)
+		return -errno;
+
 	return 0;
-	return -1;
 }
 
 /** File open operation
@@ -341,6 +346,7 @@ int kvfs_flush_impl(const char *path, struct fuse_file_info *fi) {
 	// no need to get fpath on this one, since I work from fi->fh not the path
 	log_fi(fi);
 
+	char * updated = check_path(path);
 	int status = close(dup(fi->fh));
 	if(status == -1)
 		return -errno;
