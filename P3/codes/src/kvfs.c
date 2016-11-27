@@ -450,7 +450,7 @@ void kvfs_destroy(void *userdata)
  */
 int kvfs_access(const char *path, int mask)
 {
-    log_msg("    kvfs_fullpath:  path = \"%s\"\n",path);
+    /* log_msg("    kvfs_fullpath:  path = \"%s\"\n",path); */
     return kvfs_access_impl(str2md5(path, strlen(path)), mask);
 }
 
