@@ -519,7 +519,6 @@ int kvfs_releasedir_impl(const char *path, struct fuse_file_info *fi) {
 	log_msg("\nkvfs_releasedir_impl called\n\n\n\n");
 	closedir((DIR *) (unsigned long) fi->fh);
 	return 0;
-	return -1;
 }
 
 /** Synchronize directory contents
@@ -533,8 +532,7 @@ int kvfs_releasedir_impl(const char *path, struct fuse_file_info *fi) {
 // happens to be a directory? ??? >>> I need to implement this...
 int kvfs_fsyncdir_impl(const char *path, int datasync, struct fuse_file_info *fi) {
 	log_msg("\nkvfs_fsyncdir_impl called  ");
-	return 0;
-	return -1;
+    return 0;
 }
 
 int kvfs_access_impl(const char *path, int mask) {
@@ -578,9 +576,12 @@ int kvfs_access_impl(const char *path, int mask) {
  * Introduced in version 2.5
  */
 int kvfs_ftruncate_impl(const char *path, off_t offset, struct fuse_file_info *fi) {
-	/* log_msg("\nkvfs_ftruncate_impl called  "); */
-	/* return 0; */
-	return -1;
+	 log_msg("\nkvfs_ftruncate_impl called  ");
+
+    int status = ftruncate(fi->fh, offset);
+	     if (status == -1)
+	         return -errno;
+     return 0;
 }
 
 /**
