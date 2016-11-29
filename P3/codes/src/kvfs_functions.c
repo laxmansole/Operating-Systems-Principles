@@ -27,8 +27,8 @@ char * check_path(const char * path){
 
 	if(strcmp(path, "6666cd76f96956469e7be39d750cc7d9") == 0)
 	{
-			log_msg("\tROOT_DIR = %s\n",KVFS_DATA->rootdir);
-			return KVFS_DATA->rootdir;
+		log_msg("\tROOT_DIR = %s\n",KVFS_DATA->rootdir);
+		return KVFS_DATA->rootdir;
 	}
 	/* log_msg("relative = %s \npath = %s\n",relative, path); */
 	log_msg("\trelative = %s\n",relative);
@@ -77,7 +77,6 @@ int kvfs_getattr_impl(const char *path, struct stat *statbuf) {
 int kvfs_readlink_impl(const char *path, char *link, size_t size) {
 	log_msg("\nkvfs_readlink_impl called  ");
 	return 0;
-	return -1;
 }
 
 /** Create a file node
@@ -89,13 +88,13 @@ int kvfs_readlink_impl(const char *path, char *link, size_t size) {
 int kvfs_mknod_impl(const char *path, mode_t mode, dev_t dev) {
 	log_msg("\nkvfs_mknod_impl called, %d", mode);
 
-	int res;
+	int status;
 	char * updated = check_path(path);
 	/* if (S_ISFIFO(mode))
-		res = mkfifo(updated, mode);
+		status = mkfifo(updated, mode);
 	else */
-		res = mknod(updated, mode, dev);
-	if (res == -1)
+	status = mknod(updated, mode, dev);
+	if (status == -1)
 		return -errno;
 
 	return 0;
@@ -270,13 +269,12 @@ int kvfs_read_impl(const char *path, char *buf, size_t size, off_t offset, struc
 	if (fd == -1)
 		return -errno;
 
-	int res = pread(fd, buf, size, offset);
-	if (res == -1)
-		res = -errno;
+	int status = pread(fd, buf, size, offset);
+	if (status == -1)
+		status = -errno;
 
 	close(fd);
-	return res;
-
+	return status;
 }
 
 /** Write data to an open file
@@ -386,6 +384,8 @@ int kvfs_release_impl(const char *path, struct fuse_file_info *fi) {
 	log_msg("\nkvfs_release_impl called\n\n\n\n");
 
 	int status = close(fi->fh);
+	if(status == -1)
+		return -errno;
 
 	return 0;
 }
@@ -518,7 +518,11 @@ int kvfs_readdir_impl(const char *path, void *buf, fuse_fill_dir_t filler, off_t
  */
 int kvfs_releasedir_impl(const char *path, struct fuse_file_info *fi) {
 	log_msg("\nkvfs_releasedir_impl called\n\n\n\n");
-	closedir((DIR *) (unsigned long) fi->fh);
+	int status = closedir((DIR *) (unsigned long) fi->fh);
+
+	if(status == -1)
+		return -errno;
+
 	return 0;
 }
 
@@ -533,7 +537,7 @@ int kvfs_releasedir_impl(const char *path, struct fuse_file_info *fi) {
 // happens to be a directory? ??? >>> I need to implement this...
 int kvfs_fsyncdir_impl(const char *path, int datasync, struct fuse_file_info *fi) {
 	log_msg("\nkvfs_fsyncdir_impl called  ");
-    return 0;
+	return 0;
 }
 
 int kvfs_access_impl(const char *path, int mask) {
@@ -577,12 +581,12 @@ int kvfs_access_impl(const char *path, int mask) {
  * Introduced in version 2.5
  */
 int kvfs_ftruncate_impl(const char *path, off_t offset, struct fuse_file_info *fi) {
-	 log_msg("\nkvfs_ftruncate_impl called offset= %d",offset);
+	log_msg("\nkvfs_ftruncate_impl called offset= %d",offset);
 
-    int status = ftruncate(fi->fh, offset);
-	     if (status == -1)
-	         return -errno;
-     return 0;
+	int status = ftruncate(fi->fh, offset);
+	if (status == -1)
+		return -errno;
+	return 0;
 }
 
 /**
