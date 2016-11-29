@@ -201,7 +201,7 @@ int kvfs_chown_impl(const char *path, uid_t uid, gid_t gid) {
 
 /** Change the size of a file */
 int kvfs_truncate_impl(const char *path, off_t newsize) {
-	log_msg("\nkvfs_truncate_impl called  ");
+	log_msg("\nkvfs_truncate_impl called  newsize=%d",newsize);
 	char * updated = check_path(path);
 	int status = truncate(updated,newsize);
 
@@ -300,10 +300,11 @@ int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset
 
 	// log_msg("\n\nWriting a file with FD = %d\n\n", fi->fh);
 	int status = pwrite(fd, buf, size, offset);
-	close(fd);
+
+	log_msg("\nkvfs_write_impl called status= %d",status);
 	if (status == -1)
 		return -errno;
-	return 0;
+	return status;
 }
 
 /** Get file system statistics
@@ -576,7 +577,7 @@ int kvfs_access_impl(const char *path, int mask) {
  * Introduced in version 2.5
  */
 int kvfs_ftruncate_impl(const char *path, off_t offset, struct fuse_file_info *fi) {
-	 log_msg("\nkvfs_ftruncate_impl called  ");
+	 log_msg("\nkvfs_ftruncate_impl called offset= %d",offset);
 
     int status = ftruncate(fi->fh, offset);
 	     if (status == -1)
