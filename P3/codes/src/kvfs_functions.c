@@ -290,7 +290,7 @@ int kvfs_read_impl(const char *path, char *buf, size_t size, off_t offset, struc
 // As  with read(), the documentation above is inconsistent with the
 // documentation for the write() system call.
 int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset, struct fuse_file_info *fi) {
-	log_msg("\nkvfs_writ_impl called     ");
+	log_msg("\nkvfs_write_impl called size= %d , %d",size,offset);
 
 	char * updated = check_path(path);
 	/* int fd = open(updated, O_RDWR | O_APPEND | O_CREAT, S_IRWXU); */
@@ -300,6 +300,7 @@ int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset
 
 	// log_msg("\n\nWriting a file with FD = %d\n\n", fi->fh);
 	int status = pwrite(fd, buf, size, offset);
+	close(fd);
 	if (status == -1)
 		return -errno;
 	return 0;
@@ -315,8 +316,9 @@ int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset
 int kvfs_statfs_impl(const char *path, struct statvfs *statv) {
 	log_msg("\nkvfs_statfs_impl called  ");
 
-	/* char * updated = check_path(path); */
-	int status = statvfs(path, statv);
+	char * updated = check_path(path);
+	//int status = statvfs(path, statv);
+	int status = statvfs(updated, statv);
 	if(status == -1)
 		return -errno;
 
