@@ -352,7 +352,11 @@ int kvfs_flush_impl(const char *path, struct fuse_file_info *fi) {
 	log_fi(fi);
 
 	char * updated = check_path(path);
-	int status = close(dup(fi->fh));
+	int fd = open(updated, O_WRONLY);
+	if (fd == -1)
+		return -errno;
+
+	int status = close(dup(fd));
 	if(status == -1)
 		return -errno;
 
