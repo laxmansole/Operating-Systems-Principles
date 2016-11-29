@@ -55,6 +55,7 @@ int kvfs_getattr_impl(const char *path, struct stat *statbuf) {
 	char * updated = check_path(path);
 	/* log_msg("In getattr: updated = %s\n",updated); */
 	status = lstat(updated, statbuf);
+	free(updated);
 
 	if(status == -1)
 		return -errno;
@@ -94,6 +95,7 @@ int kvfs_mknod_impl(const char *path, mode_t mode, dev_t dev) {
 		status = mkfifo(updated, mode);
 	else */
 	status = mknod(updated, mode, dev);
+	free(updated);
 	if (status == -1)
 		return -errno;
 
@@ -106,6 +108,7 @@ int kvfs_mkdir_impl(const char *path, mode_t mode) {
 
 	char * updated = check_path(path);
 	int status = mkdir(updated,mode);
+	free(updated);
 
 	if(status == -1)
 		return -errno;
@@ -118,6 +121,7 @@ int kvfs_unlink_impl(const char *path) {
 
 	char * updated = check_path(path);
 	int status =unlink(updated);
+	free(updated);
 
 	if(status == -1)
 		return -errno;
@@ -129,6 +133,7 @@ int kvfs_rmdir_impl(const char *path) {
 	log_msg("\nkvfs_rmdir_impl called  ");
 	char * updated = check_path(path);
 	int status = rmdir(updated);
+	free(updated);
 
 	if(status == -1)
 		return -errno;
@@ -145,6 +150,7 @@ int kvfs_symlink_impl(const char *path, const char *link) {
 	//char * updated  = check_path(path);
 	char * updated2 = check_path(link);
 	int status = symlink(path, updated2);
+	free(updated2);
 
 	if(status == -1)
 		return -errno;
@@ -158,6 +164,8 @@ int kvfs_rename_impl(const char *path, const char *newpath) {
 	char * updated  = check_path(path);
 	char * updated2 = check_path(newpath);
 	int status = rename(updated,updated2);
+	free(updated);
+	free(updated2);
 
 	if(status == -1)
 		return -errno;
@@ -170,6 +178,8 @@ int kvfs_link_impl(const char *path, const char *newpath) {
 	char * updated  = check_path(path);
 	char * updated2 = check_path(newpath);
 	int status = link(updated,updated2);
+	free(updated);
+	free(updated2);
 
 	if(status == -1)
 		return -errno;
@@ -181,6 +191,7 @@ int kvfs_chmod_impl(const char *path, mode_t mode) {
 	log_msg("\nkvfs_chmod_impl called  ");
 	char * updated = check_path(path);
 	int status = chmod(updated,mode);
+	free(updated);
 
 	if(status == -1)
 		return -errno;
@@ -192,6 +203,7 @@ int kvfs_chown_impl(const char *path, uid_t uid, gid_t gid) {
 	log_msg("\nkvfs_chown_impl called  ");
 	char * updated = check_path(path);
 	int status = lchown(updated,uid,gid);
+	free(updated);
 
 	if(status == -1)
 		return -errno;
@@ -203,6 +215,7 @@ int kvfs_truncate_impl(const char *path, off_t newsize) {
 	log_msg("\nkvfs_truncate_impl called  newsize=%d",newsize);
 	char * updated = check_path(path);
 	int status = truncate(updated,newsize);
+	free(updated);
 
 	if(status == -1)
 		return -errno;
@@ -216,6 +229,8 @@ int kvfs_utime_impl(const char *path, struct utimbuf *ubuf) {
 
 	char * updated = check_path(path);
 	int status = utime(updated, ubuf);
+	free(updated);
+
 	if (status == -1)
 		return -errno;
 
@@ -237,6 +252,8 @@ int kvfs_open_impl(const char *path, struct fuse_file_info *fi) {
 
 	char * updated = check_path(path);
 	int fd = open(updated, fi->flags);
+	free(updated);
+
 	if (fd == -1)
 		return -errno;
 
@@ -266,6 +283,8 @@ int kvfs_read_impl(const char *path, char *buf, size_t size, off_t offset, struc
 
 	char * updated = check_path(path);
 	int fd = open(updated, O_RDONLY);
+	free(updated);
+
 	if (fd == -1)
 		return -errno;
 
@@ -293,6 +312,8 @@ int kvfs_write_impl(const char *path, const char *buf, size_t size, off_t offset
 	char * updated = check_path(path);
 	/* int fd = open(updated, O_RDWR | O_APPEND | O_CREAT, S_IRWXU); */
 	int fd = open(updated, O_WRONLY);
+	free(updated);
+
 	if (fd == -1)
 		return -errno;
 
@@ -318,6 +339,8 @@ int kvfs_statfs_impl(const char *path, struct statvfs *statv) {
 	char * updated = check_path(path);
 	//int status = statvfs(path, statv);
 	int status = statvfs(updated, statv);
+	free(updated);
+
 	if(status == -1)
 		return -errno;
 
@@ -356,6 +379,8 @@ int kvfs_flush_impl(const char *path, struct fuse_file_info *fi) {
 
 	char * updated = check_path(path);
 	int fd = open(updated, O_WRONLY);
+	free(updated);
+
 	if (fd == -1)
 		return -errno;
 
@@ -459,6 +484,8 @@ int kvfs_opendir_impl(const char *path, struct fuse_file_info *fi) {
 	char * updated = check_path(path);
 
 	dh = opendir(updated);
+	free(updated);
+
 	if(dh == NULL)
 		return -errno;
 
@@ -496,6 +523,8 @@ int kvfs_readdir_impl(const char *path, void *buf, fuse_fill_dir_t filler, off_t
 
 	char * updated = check_path(path);
 	dp = opendir(updated);
+	free(updated);
+
 	if (dp == NULL)
 		return -errno;
 
@@ -548,6 +577,8 @@ int kvfs_access_impl(const char *path, int mask) {
 	char * updated = check_path(path);
 
 	status = access(updated, mask);
+	free(updated);
+
 	if(status == -1)
 		return -errno;
 
@@ -606,6 +637,8 @@ int kvfs_fgetattr_impl(const char *path, struct stat *statbuf, struct fuse_file_
 
 	char * updated = check_path(path);
 	int fd = open(updated, O_RDONLY);
+	free(updated);
+	
 	if (fd == -1)
 		return -errno;
 
