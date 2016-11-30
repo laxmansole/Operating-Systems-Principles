@@ -88,6 +88,13 @@ int kvfs_getattr_impl(const char *path, struct stat *statbuf) {
 // kvfs_readlink() code by Bernardo F Costa (thanks!)
 int kvfs_readlink_impl(const char *path, char *link, size_t size) {
 	log_msg("\nkvfs_readlink_impl called  ");
+
+	char * updated = check_path(path);
+	int status = readlink(updated, link, size - 1);
+	if (status == -1)
+		return -errno;
+
+	link[status] = '\0';
 	return 0;
 }
 
@@ -158,9 +165,9 @@ int kvfs_rmdir_impl(const char *path) {
 // unaltered, but insert the link into the mounted directory.
 int kvfs_symlink_impl(const char *path, const char *link) {
 	log_msg("\nkvfs_symlink_impl called  ");
-	//char * updated  = check_path(path);
+	char * updated  = check_path(path);
 	char * updated2 = check_path(link);
-	int status = symlink(path, updated2);
+	int status = symlink(updated, updated2);
 	// free(updated2);
 
 	if(status == -1)
